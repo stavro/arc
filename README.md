@@ -32,7 +32,6 @@ Arc requires a **definition module** which contains the relevant configuration t
 
 This definition module contains relevant functions to determine:
   * Optional transformations of the uploaded file
-  * Clean up and add more tests
   * Where to put your files (the storage directory)
   * What to name your files
   * How to secure your files (private? Or publically accessible?)
