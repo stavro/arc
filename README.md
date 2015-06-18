@@ -110,7 +110,7 @@ The example above stores the original file, as well as a squared 100x100 thumbna
 
 For more information on defining your transformation, please consult [ImageMagick's convert documentation](http://www.imagemagick.org/script/convert.php).
 
-> **Note**: Keep this transformation function simple and deterministic based on the version, file name, and scope object. The `transform` function is subsequently called during URL generation, and the transformation is scanned for the output file format.  As such, if conditionally format the image as a `png` or `jpg` depending on the time of day, you will be displeased with the result of Arc's URL generation.
+> **Note**: Keep this transformation function simple and deterministic based on the version, file name, and scope object. The `transform` function is subsequently called during URL generation, and the transformation is scanned for the output file format.  As such, if you conditionally format the image as a `png` or `jpg` depending on the time of day, you will be displeased with the result of Arc's URL generation.
 
 ## Storage of files
 
