@@ -19,7 +19,7 @@ end
 
 and add `erlcloud` as an application startup dependency in your application's `mix.exs` file:
 
-```
+```elixir
 def application do
   [
     mod: { MyApp, [] },
