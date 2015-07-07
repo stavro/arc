@@ -17,6 +17,20 @@ defp deps do
 end
 ```
 
+and add `erlcloud` as an application startup dependency in your application's `mix.exs` file:
+
+```
+def application do
+  [
+    mod: { MyApp, [] },
+    applications: [
+      :other_app_dependencies,
+      :erlcloud
+    ]
+  ]
+end
+```
+
 Then run `mix deps.get` in your shell to fetch the dependencies.
 
 ### Usage with Ecto
