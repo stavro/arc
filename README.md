@@ -1,6 +1,8 @@
 Arc
 ===
 
+[![Build Status](https://semaphoreci.com/api/v1/projects/7fc62b34-c895-475e-a3a6-671fefd0c017/480818/badge.svg)](https://semaphoreci.com/stavro/arc)
+
 Arc is a flexible file upload library for Elixir with straightforward integrations for Amazon S3 and ImageMagick.
 
 Browse the readme below, or jump to [a full example](#full-example).
