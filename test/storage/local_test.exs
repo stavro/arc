@@ -2,6 +2,10 @@ defmodule ArcTest.Storage.Local do
   use ExUnit.Case
   @img "test/support/image.png"
 
+  setup_all do
+    File.mkdir_p("arctest/uploads")
+  end
+
   defmodule DummyDefinition do
     use Arc.Definition.Storage
     @acl :public_read
