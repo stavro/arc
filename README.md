@@ -130,7 +130,22 @@ For more information on defining your transformation, please consult [ImageMagic
 
 ## Storage of files
 
-Arc currently only supports Amazon S3 as a destination for file uploads.
+Arc currently supports Amazon S3 and local destinations for file uploads.
+
+### Local Configuration
+```elixir
+defmodule Avatar do
+  use Arc.Definition
+
+  @versions [:original, :thumb]
+
+  def transform(:thumb, _) do
+    {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png"}
+  end
+  
+   def __storage, do: Arc.Storage.Local
+end
+```
 
 ### S3 Configuration
 
