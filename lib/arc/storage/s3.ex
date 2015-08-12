@@ -4,7 +4,7 @@ defmodule Arc.Storage.S3 do
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
     s3_key = Path.join(destination_dir, file.file_name)
-    binary = File.read!(file.path)
+    binary = extract_binary(file)
     acl = definition.acl(version, {file, scope})
 
     s3_options =
@@ -70,6 +70,15 @@ defmodule Arc.Storage.S3 do
     case bucket_name do
       {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
       name -> name
+    end
+  end
+
+  defp extract_binary(file) do
+    if file.binary do
+      binary = file.binary
+    else
+      {:ok, binary} = File.read(file.path)
+      binary
     end
   end
 end

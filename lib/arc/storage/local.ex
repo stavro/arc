@@ -3,7 +3,12 @@ defmodule Arc.Storage.Local do
     destination_dir = definition.storage_dir(version, {file, scope})
     path = Path.join(destination_dir, file.file_name)
     path |> Path.dirname() |> File.mkdir_p()
-    File.copy!(file.path, path)
+    binary = extract_binary(file)
+    if file.binary do
+      File.write!(Path.join(destination_dir, file.file_name), binary)
+    else
+      File.copy!(file.path, path)
+    end
     {:ok, file.file_name}
   end
 
@@ -21,5 +26,14 @@ defmodule Arc.Storage.Local do
       definition.storage_dir(version, file_and_scope),
       Arc.Definition.Versioning.resolve_file_name(definition, version, file_and_scope)
     ])
+  end
+
+  defp extract_binary(file) do
+    if file.binary do
+      binary = file.binary
+    else
+      {:ok, binary} = File.read(file.path)
+      binary
+    end
   end
 end

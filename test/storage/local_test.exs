@@ -38,4 +38,8 @@ defmodule ArcTest.Storage.Local do
     refute File.exists?("arctest/uploads/original-image.png")
     refute File.exists?("arctest/uploads/1/thumb-image.png")
   end
+
+  test "save binary" do
+    assert "binary.png" == Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new("binary", "binary.png"), nil})
+  end
 end
