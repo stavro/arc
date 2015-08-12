@@ -3,6 +3,7 @@ defmodule Arc.Storage.Local do
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
     {:ok, binary} = File.read(file.path)
+    File.mkdir_p(destination_dir)
     File.write!(Path.join(destination_dir, file.file_name), binary)
     file.file_name
   end
