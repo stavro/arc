@@ -5,6 +5,10 @@ defmodule Arc.Actions.Store do
     end
   end
 
+  def store(definition, {file = %Arc.File{}, scope}) do
+    put(definition, {file, scope})
+  end
+
   def store(definition, {file, scope}) when is_binary(file) or is_map(file) do
     put(definition, {Arc.File.new(file), scope})
   end
