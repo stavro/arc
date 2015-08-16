@@ -1,7 +1,7 @@
 defmodule Arc.Mixfile do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [app: :arc,
@@ -24,7 +24,7 @@ defmodule Arc.Mixfile do
     [contributors: ["Sean Stavropoulos"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/stavro/arc"},
-     files: ~w(mix.exs README.md lib)]
+     files: ~w(mix.exs README.md CHANGELOG.md lib)]
   end
   # Configuration for the OTP application
   #
