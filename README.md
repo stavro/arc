@@ -71,7 +71,7 @@ Check this file for descriptions of configurable options.
 
 There are two supported use-cases of Arc currently:
 
-  1. As a general file store, or 
+  1. As a general file store, or
   2. As an attachment to another model (the attached model is referred to as a `scope`)
 
 The upload definition file responds to `Avatar.store/1` which accepts either:
@@ -142,8 +142,10 @@ defmodule Avatar do
   def transform(:thumb, _) do
     {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png"}
   end
-  
+
    def __storage, do: Arc.Storage.Local
+
+   def filename(version,  file), do: "#{version}-#{file.file_name}"
 end
 ```
 
