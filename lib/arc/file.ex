@@ -10,7 +10,7 @@ defmodule Arc.File do
   end
 
   def new(binary, filename) do
-     %Arc.File{ binary: binary, file_name: filename }
+     %Arc.File{ binary: binary, file_name: Path.basename(filename) }
   end
 
   # Accepts a map conforming to %Plug.Upload{} syntax
