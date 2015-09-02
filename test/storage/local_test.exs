@@ -22,7 +22,6 @@ defmodule ArcTest.Storage.Local do
     def __storage, do: Arc.Storage.Local
     def filename(:original, {file, _}), do: "original-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
     def filename(:thumb, {file, _}), do: "1/thumb-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
-    def filename(version,  {file, scope}), do: "#{version}-#{file.file_name}"
   end
 
   test "put, delete, get" do
@@ -38,9 +37,5 @@ defmodule ArcTest.Storage.Local do
     Arc.Storage.Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
     refute File.exists?("arctest/uploads/original-image.png")
     refute File.exists?("arctest/uploads/1/thumb-image.png")
-  end
-
-  test "save binary" do
-    assert "binary.png" == Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new("binary", "binary.png"), nil})
   end
 end
