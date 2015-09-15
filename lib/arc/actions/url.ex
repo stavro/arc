@@ -38,7 +38,7 @@ defmodule Arc.Actions.Url do
   #
 
   defp build(definition, version, {nil, scope}, options) do
-    definition.default_url(version)
+    definition.default_url(version, scope)
   end
 
   defp build(definition, version, file_and_scope, options) do

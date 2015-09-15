@@ -6,14 +6,15 @@ defmodule ArcTest.Actions.Url do
     use Arc.Actions.Url
 
     def __versions, do: [:original, :thumb]
-    def default_url(version), do: "dummy-#{version}"
+    def default_url(version, scope) when is_nil(scope), do: "dummy-#{version}"
+    def default_url(version, scope), do: "dummy-#{version}-#{scope}"
     def __storage, do: Arc.Storage.S3
   end
 
   test "delegates default_url generation to the definition when given a nil file" do
     assert DummyDefinition.url(nil) == "dummy-original"
     assert DummyDefinition.url(nil, :thumb) == "dummy-thumb"
-    assert DummyDefinition.url({nil, :scope}, :thumb) == "dummy-thumb"
+    assert DummyDefinition.url({nil, :scope}, :thumb) == "dummy-thumb-scope"
   end
 
   test_with_mock "delegates url generation to the storage engine", Arc.Storage.S3,
