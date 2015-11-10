@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.1.4 (11-10-2015)
+  * (Enhancement: Local Storage) Filenames which contain path separators will flatten out as expected prior to moving copying the file to its destination.
+
 ## v0.1.3 (09-15-2015)
 
   * (Enhancement: Url Generation) `default_url/2` introduced to definition module which passes the given scope as the second parameter.  Backwards compatibility is maintained for `default_url/1`.
