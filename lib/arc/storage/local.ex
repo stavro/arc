@@ -1,8 +1,9 @@
 defmodule Arc.Storage.Local do
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
-    File.mkdir_p(destination_dir)
-    {:ok, _} = File.copy(file.path, Path.join(destination_dir, file.file_name))
+    path = Path.join(destination_dir, file.file_name)
+    path |> Path.dirname() |> File.mkdir_p()
+    {:ok, _} = File.copy(file.path, path)
     file.file_name
   end
 
