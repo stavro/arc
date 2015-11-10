@@ -22,6 +22,7 @@ defmodule Arc.Mixfile do
 
   defp package do
     [contributors: ["Sean Stavropoulos"],
+     maintainers: ["Sean Stavropoulos"],
      licenses: ["Apache 2.0"],
      links: %{"GitHub" => "https://github.com/stavro/arc"},
      files: ~w(mix.exs README.md CHANGELOG.md lib)]
