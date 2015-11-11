@@ -214,7 +214,9 @@ defmodule Avatar do
   use Arc.Definition
 
   def validate({file, _}) do
-   ~w(.jpg .jpeg .gif .png) |> Enum.member?(Path.extname(file.file_name))
+   valid_extensions = ~w(.jpg .jpeg .gif .png)
+   file_extension = file.file_name |> Path.extname |> String.downcase
+   Enum.member?(valid_extensions, file_extension)
   end
 end
 ```
