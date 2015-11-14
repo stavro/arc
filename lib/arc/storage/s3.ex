@@ -4,7 +4,7 @@ defmodule Arc.Storage.S3 do
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
     s3_key = Path.join(destination_dir, file.file_name) |> String.to_char_list
-    {:ok, binary} = File.read(file.path)
+    binary = File.read!(file.path)
     acl = definition.acl(version, {file, scope})
     :erlcloud_s3.put_object(bucket, s3_key, binary, [acl: acl], erlcloud_config)
     file.file_name
@@ -61,7 +61,7 @@ defmodule Arc.Storage.S3 do
   end
 
   defp bucket do
-    {:ok, bucket} = Application.fetch_env(:arc, :bucket)
+    bucket = Application.fetch_env!(:arc, :bucket)
     to_char_list(bucket)
   end
 
