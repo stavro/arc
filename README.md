@@ -14,7 +14,7 @@ Add the latest stable release to your `mix.exs` file:
 ```elixir
 defp deps do
   [
-    {:arc, "~> 0.1.3"}
+    {:arc, "~> 0.1.4"}
   ]
 end
 ```
@@ -212,11 +212,11 @@ Arc delegates validation to a `validate/1` function with a tuple of the file and
 ```elixir
 defmodule Avatar do
   use Arc.Definition
+  @extension_whitelist ~w(.jpg .jpeg .gif .png)
 
-  def validate({file, _}) do
-   valid_extensions = ~w(.jpg .jpeg .gif .png)
-   file_extension = file.file_name |> Path.extname |> String.downcase
-   Enum.member?(valid_extensions, file_extension)
+  def validate({file, _}) do   
+    file_extension = file.file_name |> Path.extname |> String.downcase
+    Enum.member?(@extension_whitelist, file_extension)
   end
 end
 ```
@@ -300,8 +300,9 @@ defmodule Avatar do
 
   def acl(:thumb, _), do: :public_read
 
-  def validate({file, _}) do
-    @extension_whitelist |> Enum.member?(Path.extname(file.file_name))
+  def validate({file, _}) do   
+    file_extension = file.file_name |> Path.extname |> String.downcase
+    Enum.member?(@extension_whitelist, file_extension)
   end
 
   def transform(:thumb, _) do
