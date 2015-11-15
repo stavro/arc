@@ -60,4 +60,18 @@ defmodule ArcTest.Storage.S3 do
     #verify image is not found
     {:ok, {{_, 404, 'Not Found'}, _, _}} = :httpc.request(to_char_list(signed_url))
   end
+
+  test "issues error message when missing env vars" do
+    Application.put_env :arc, :access_key_id, "XXXXXXX"
+    Application.put_env :arc, :secret_access_key, nil
+    assert_raise Arc.Error.InvalidCredentialsError, fn ->
+      Arc.Storage.S3.put(DummyDefinition, :private, {Arc.File.new(@img), nil})
+    end
+
+    Application.put_env :arc, :access_key_id, nil
+    Application.put_env :arc, :secret_access_key, "XXXXXXX"
+    assert_raise Arc.Error.InvalidCredentialsError, fn ->
+      Arc.Storage.S3.put(DummyDefinition, :private, {Arc.File.new(@img), nil})
+    end
+  end
 end

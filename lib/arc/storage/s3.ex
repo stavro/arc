@@ -53,11 +53,17 @@ defmodule Arc.Storage.S3 do
   end
 
   defp erlcloud_config do
-    :erlcloud_s3.new(
-      to_char_list(Application.get_env(:arc, :access_key_id)),
-      to_char_list(Application.get_env(:arc, :secret_access_key)),
-      's3.amazonaws.com'
-    )
+    access_key_id = Application.get_env(:arc, :access_key_id)
+    secret_access_key = Application.get_env(:arc, :secret_access_key)
+    case {access_key_id, secret_access_key} do
+        {nil, x} when x != nil -> raise Arc.Error.InvalidCredentialsError
+        {x, nil} when x != nil -> raise Arc.Error.InvalidCredentialsError
+        _ -> :erlcloud_s3.new(
+          to_char_list(access_key_id),
+          to_char_list(secret_access_key),
+          's3.amazonaws.com'
+        )
+    end
   end
 
   defp bucket do
