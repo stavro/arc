@@ -44,7 +44,7 @@ defmodule Arc.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:erlcloud, "~> 0.9.0"},
+      {:erlcloud, "~> 0.11.0"},
       {:mock, "~> 0.1.1", only: :test}
     ]
   end
