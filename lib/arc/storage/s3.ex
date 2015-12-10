@@ -3,10 +3,10 @@ defmodule Arc.Storage.S3 do
 
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
-    s3_key = Path.join(destination_dir, file.file_name) |> String.to_char_list
+    s3_key = Path.join(destination_dir, file.file_name)
     binary = File.read!(file.path)
     acl = definition.acl(version, {file, scope})
-    :erlcloud_s3.put_object(bucket, s3_key, binary, [acl: acl], erlcloud_config)
+    ExAws.S3.put_object(bucket, s3_key, binary, [acl: acl])
     file.file_name
   end
 
@@ -19,8 +19,8 @@ defmodule Arc.Storage.S3 do
 
   def delete(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
-    s3_key = Path.join(destination_dir, file.file_name) |> String.to_char_list
-    :erlcloud_s3.delete_object(bucket, s3_key, erlcloud_config)
+    s3_key = Path.join(destination_dir, file.file_name)
+    ExAws.S3.delete_object(bucket, s3_key)
   end
 
   #
@@ -32,9 +32,9 @@ defmodule Arc.Storage.S3 do
   end
 
   defp build_signed_url(definition, version, file_and_scope, options) do
-    expire_in = Keyword.get(options, :expire_in, @default_expiry_time)
-    make_get_url(expire_in, bucket_name, s3_key(definition, version, file_and_scope), erlcloud_config)
-    |> Path.join("")
+    expires_in = Keyword.get(options, :expire_in, @default_expiry_time)
+    {:ok, url} = ExAws.S3.presigned_url(:get, bucket, s3_key(definition, version, file_and_scope), [expires_in: expires_in, virtual_host: virtual_host])
+    url
   end
 
   defp s3_key(definition, version, file_and_scope) do
@@ -45,31 +45,21 @@ defmodule Arc.Storage.S3 do
   end
 
   defp host do
-    Application.get_env(:arc, :asset_host) || "https://s3.amazonaws.com/#{bucket_name}"
+    Application.get_env(:arc, :asset_host) || default_host
   end
 
-  defp bucket_name do
-    Application.get_env(:arc, :bucket)
+  defp default_host do
+    case virtual_host do
+      true -> "https://#{bucket}.s3.amazonaws.com"
+      _    -> "https://s3.amazonaws.com/#{bucket}"
+    end
   end
 
-  defp erlcloud_config do
-    :erlcloud_s3.new(
-      to_char_list(Application.get_env(:arc, :access_key_id)),
-      to_char_list(Application.get_env(:arc, :secret_access_key)),
-      's3.amazonaws.com'
-    )
+  defp virtual_host do
+    Application.get_env(:arc, :virtual_host) || false
   end
 
   defp bucket do
-    bucket = Application.fetch_env!(:arc, :bucket)
-    to_char_list(bucket)
-  end
-
-  defp make_get_url(expire, bucket_name, s3_key, config) do
-    :erlcloud_s3.make_get_url(expire,
-      to_char_list(bucket_name),
-      to_char_list(s3_key),
-      config
-    )
+    Application.fetch_env!(:arc, :bucket)
   end
 end

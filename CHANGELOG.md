@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.2.0 (12-11-2015)
+  * (Breaking Change) Erlcloud has been removed in favor of ExAws.
+  * (Enhancement) Added a configuration parameter to generate urls in the `virtual_host` style.
+
+### Upgrade Instructions
+Since `erlcloud` has been removed from `arc`, you must also remove it from your dependency graph as well as your application list. In its place, add `ex_aws` and `httpoison` to your dependencies as well as application list. Next, remove the aws credential configuration from arc:
+
+```elixir
+# BEFORE
+config :arc,
+  access_key_id: "###",		
+  secret_access_key: "###",		
+  bucket: "uploads"
+
+#AFTER
+config :arc,
+  bucket: "uploads"
+
+# (this is the default ex_aws config... if your keys are not in environment variables you can override it here)
+config :ex_aws,
+  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
+  secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role]
+```
+
+Read more about how ExAws manages configuration [here](https://github.com/CargoSense/ex_aws).
+
 ## v0.1.4 (11-10-2015)
   * (Enhancement: Local Storage) Filenames which contain path separators will flatten out as expected prior to moving copying the file to its destination.
 
