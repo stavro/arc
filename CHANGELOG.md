@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.1 (12-11-2015)
+  * (Bugfix) Raise `Arc.ConvertError` if ImageMagick's `convert` tool exits unsuccessfully.
+
 ## v0.2.0 (12-11-2015)
   * (Breaking Change) Erlcloud has been removed in favor of ExAws.
   * (Enhancement) Added a configuration parameter to generate urls in the `virtual_host` style.
