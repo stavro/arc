@@ -14,20 +14,22 @@ Add the latest stable release to your `mix.exs` file:
 ```elixir
 defp deps do
   [
-    {:arc, "~> 0.1.4"}
+    arc: "~> 0.2.0",
+    ex_aws: "~> 0.4.10", # Required if using Amazon S3
+    httpoison: "~> 0.7"  # Required if using Amazon S3
   ]
 end
 ```
 
-and add `erlcloud` as an application startup dependency in your application's `mix.exs` file:
+If you plan on using Amazon's S3 Storage, you must also add `ex_aws` and `httpoison` the following applications as startup dependencies your application's `mix.exs` file:
 
 ```elixir
 def application do
   [
     mod: { MyApp, [] },
     applications: [
-      :other_app_dependencies,
-      :erlcloud
+      :ex_aws,
+      :httpoison
     ]
   ]
 end
@@ -153,16 +155,26 @@ end
 
 ### S3 Configuration
 
-[Erlcloud](https://github.com/gleber/erlcloud) is used to support Amazon S3.
+[ExAws](https://github.com/CargoSense/ex_aws) is used to support Amazon S3.
 
-To store your attachments in Amazon S3, you'll need to provide your AWS credentials and bucket destination in your application config:
+To store your attachments in Amazon S3, you'll need to provide a bucket destination in your application config:
 
 ```elixir
 config :arc,
-  access_key_id: "AKIAGJAVFNWDALJDLSA",
-  secret_access_key: "ncakAIWd+DaklwFAS51dDQo1i4EFAs\DASZGq",
   bucket: "uploads"
 ```
+
+In addition, ExAws must be configured with the appropriate Amazon S3 credentials.
+
+ExAws has by default the equivalent including the following in your mix.exs
+
+```elixir
+config :ex_aws,
+  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
+  secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role]
+```
+
+This means it will first look for the AWS standard AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables, and fall back using instance meta-data if those don't exist. You should set those environment variables to your credentials, or configure an instance that this library runs on to have an iam role.
 
 ### Storage Directory
 
@@ -277,6 +289,22 @@ end
 Avatar.url(nil) #=> "http://example.com/images/placeholders/profile_image.png"
 Avatar.url({nil, scope}) #=> "http://example.com/images/placeholders/profile_image.png"
 ```
+
+**Virtual Host**
+
+To support AWS regions other than US Standard, it is convenient to generate urls in the [`virtual_host`](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html) style.  This will generate urls in the style: `https://#{bucket}.s3.amazonaws.com` instead of `https://s3.amazonaws.com/#{bucket}`.
+
+To use this style of url generation, your bucket name must be DNS compliant.
+
+This can be enabled with:
+
+```elixir
+config :arc,
+  virtual_host: true
+```
+
+> When using virtual hosted–style buckets with SSL, the SSL wild card certificate only matches buckets that do not contain periods. To work around this, use HTTP or write your own certificate verification logic.
+
 
 **Asset Host**
 

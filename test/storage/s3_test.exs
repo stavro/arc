@@ -11,11 +11,26 @@ defmodule ArcTest.Storage.S3 do
     def acl(:private, _), do: :private
   end
 
+  def env_bucket do
+    System.get_env("ARC_TEST_BUCKET")
+  end
+
   setup_all do
-    :erlcloud.start
-    Application.put_env :arc, :bucket, System.get_env("ARC_TEST_BUCKET")
-    Application.put_env :arc, :access_key_id, System.get_env("ARC_TEST_S3_KEY")
-    Application.put_env :arc, :secret_access_key,  System.get_env("ARC_TEST_S3_SECRET")
+    Application.put_env :arc, :virtual_host, false
+    Application.put_env :arc, :bucket, env_bucket
+    # Application.put_env :ex_aws, :s3, [scheme: "https://", host: "s3.amazonaws.com", region: "us-west-2"]
+    Application.put_env :ex_aws, :access_key_id, System.get_env("ARC_TEST_S3_KEY")
+    Application.put_env :ex_aws, :secret_access_key,  System.get_env("ARC_TEST_S3_SECRET")
+  end
+
+  test "virtual_host" do
+    Application.put_env :arc, :virtual_host, false
+    url = Arc.Storage.S3.url(DummyDefinition, :original, {Arc.File.new(@img), nil})
+    assert "https://s3.amazonaws.com/#{env_bucket}/arctest/uploads/image.png", url
+
+    Application.put_env :arc, :virtual_host, false
+    url = Arc.Storage.S3.url(DummyDefinition, :original, {Arc.File.new(@img), nil})
+    assert "https://#{env_bucket}.s3.amazonaws.com/arctest/uploads/image.png", url
   end
 
   @tag :s3
