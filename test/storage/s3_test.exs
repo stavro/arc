@@ -16,6 +16,8 @@ defmodule ArcTest.Storage.S3 do
   end
 
   setup_all do
+    Application.ensure_all_started(:httpoison)
+    Application.ensure_all_started(:ex_aws)
     Application.put_env :arc, :virtual_host, false
     Application.put_env :arc, :bucket, env_bucket
     # Application.put_env :ex_aws, :s3, [scheme: "https://", host: "s3.amazonaws.com", region: "us-west-2"]
