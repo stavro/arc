@@ -14,7 +14,7 @@ Add the latest stable release to your `mix.exs` file:
 ```elixir
 defp deps do
   [
-    arc: "~> 0.2.0",
+    arc: "~> 0.2.2",
     ex_aws: "~> 0.4.10", # Required if using Amazon S3
     httpoison: "~> 0.7"  # Required if using Amazon S3
   ]
