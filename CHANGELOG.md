@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.2 (12-14-2015)
+  * (Enhancement) Allow the version transformation and storage timeout to be specified in configuration `config :arc, version_timeout: 15_000`.
+
 ## v0.2.1 (12-11-2015)
   * (Bugfix) Raise `Arc.ConvertError` if ImageMagick's `convert` tool exits unsuccessfully.
 
