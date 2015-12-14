@@ -43,4 +43,14 @@ defmodule ArcTest.Actions.Store do
       assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:ok, "image.png"}
     end
   end
+
+  test "timeout" do
+    Application.put_env :arc, :version_timeout, 1
+
+    catch_exit do
+      with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> :timer.sleep(100) && :ok end] do
+        assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:ok, "image.png"}
+      end
+    end
+  end
 end

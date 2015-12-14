@@ -1,6 +1,4 @@
 defmodule Arc.Actions.Store do
-  @version_timeout 10000 #milliseconds
-
   defmacro __using__(_) do
     quote do
       def store(args), do: Arc.Actions.Store.store(__MODULE__, args)
@@ -35,7 +33,11 @@ defmodule Arc.Actions.Store do
   defp put_versions(definition, {file, scope}) do
     definition.__versions
     |> Enum.map(fn(r) -> async_put_version(definition, r, {file, scope}) end)
-    |> Enum.each(fn(task) -> Task.await(task, @version_timeout) end)
+    |> Enum.each(fn(task) -> Task.await(task, version_timeout) end)
+  end
+
+  defp version_timeout do
+    Application.get_env(:arc, :version_timeout) || 15_000
   end
 
   defp async_put_version(definition, version, {file, scope}) do
