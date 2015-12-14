@@ -132,6 +132,17 @@ For more information on defining your transformation, please consult [ImageMagic
 
 > **System Resources**: If you are accepting arbitrary uploads on a public site, it may be prudent to add system resource limits to prevent overloading your system resources from malicious or nefarious files.  Since all processing is done directly in ImageMagick, you may pass in system resource restrictions through the [-limit](http://www.imagemagick.org/script/command-line-options.php#limit) flag.  One such example might be: `-limit area 10MB -limit disk 100MB`.
 
+### Asynchronous File Uploading
+
+If you specify multiple versions in your definition module, each version is processed and stored concurrently as independent Tasks.  To prevent an overconsumption of system resources, each Task is given a specified timeout to wait, after which the process will fail.  By default this is `15 seconds`.
+
+If you wish to change the time allocated to version transformation and storage, you may add a configuration parameter:
+
+```elixir
+config :arc,
+  :version_timeout, 15_000 # milliseconds
+```
+
 ## Storage of files
 
 Arc currently supports Amazon S3 and local destinations for file uploads.
