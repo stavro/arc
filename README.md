@@ -177,7 +177,7 @@ config :arc,
 
 In addition, ExAws must be configured with the appropriate Amazon S3 credentials.
 
-ExAws has by default the equivalent including the following in your mix.exs
+ExAws has by default the following configuration (which you may override if you wish):
 
 ```elixir
 config :ex_aws,
@@ -198,6 +198,8 @@ def storage_dir(version, {file, scope}) do
   "uploads/users/avatars/#{scope.id}"
 end
 ```
+
+> **Note**: If you are "attaching" a file to a record on creation (eg, while inserting the record at the same time), then you cannot use the model's `id` as a path component.  You must either (1) use a different storage path format, such as UUIDs, or (2) attach and update the model after an id has been given.
 
 ### Access Control Permissions
 
