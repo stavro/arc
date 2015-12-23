@@ -2,7 +2,7 @@ defmodule Arc.Actions.Store do
   defmacro __using__(_) do
     quote do
       def store(args), do: Arc.Actions.Store.store(__MODULE__, args)
-      def store(args), do: Arc.Actions.Store.remove(__MODULE__, args)
+      def remove(args), do: Arc.Actions.Store.remove(__MODULE__, args)
     end
   end
 
