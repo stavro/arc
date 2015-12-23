@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0 (2016-01-22)
+  * (Enhancement) Introduce `Definition.delete/2`
+
+> While there is no strict backwards incompatibility with the public API, a number of users have been using Arc.Storage.S3.delete as a public API due to a lack of a fully supported delete method.  This internal method has now changed slightly, thus prompting more than a patch release.
+
 ## v0.2.3 (2016-01-22)
   * (Enhancement) Allow specifying custom s3 object headers through the definition module via `s3_object_headers/2`.
 

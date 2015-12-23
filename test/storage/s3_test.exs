@@ -13,8 +13,61 @@ defmodule ArcTest.Storage.S3 do
     def s3_object_headers(:original, {_, :with_content_disposition}), do: %{content_disposition: "attachment; filename=abc.png"}
   end
 
+  defmodule DefinitionWithScope do
+    use Arc.Definition
+    @acl :public_read
+    def storage_dir(_, {_, scope}), do: "uploads/with_scopes/#{scope.id}"
+  end
+
   def env_bucket do
     System.get_env("ARC_TEST_BUCKET")
+  end
+
+  defmacro delete_and_assert_not_found(definition, args) do
+    quote bind_quoted: [definition: definition, args: args] do
+      :ok = definition.delete(args)
+      signed_url = DummyDefinition.url(args, signed: true)
+      {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_char_list(signed_url))
+      assert 404 == code
+      assert 'Not Found' == msg
+    end
+  end
+
+  defmacro assert_header(definition, args, header, value) do
+    quote bind_quoted: [definition: definition, args: args, header: header, value: value] do
+      url = definition.url(args)
+      {:ok, {{_, 200, 'OK'}, headers, _}} = :httpc.request(to_char_list(url))
+
+      char_header = to_char_list(header)
+
+      assert to_char_list(value) == Enum.find_value(headers, fn(
+        {^char_header, value}) -> value
+        _ -> nil
+      end)
+    end
+  end
+
+  defmacro assert_private(definition, args) do
+    quote bind_quoted: [definition: definition, args: args] do
+      unsigned_url = definition.url(args)
+      {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_char_list(unsigned_url))
+      assert code == 403
+      assert msg == 'Forbidden'
+
+      signed_url = definition.url(args, signed: true)
+      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_char_list(signed_url))
+      assert code == 200
+      assert msg == 'OK'
+    end
+  end
+
+  defmacro assert_public(definition, args) do
+    quote bind_quoted: [definition: definition, args: args] do
+      url = definition.url(args)
+      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_char_list(url))
+      assert code == 200
+      assert msg == 'OK'
+    end
   end
 
   setup_all do
@@ -38,18 +91,9 @@ defmodule ArcTest.Storage.S3 do
   @tag :s3
   @tag timeout: 15000
   test "public put and get" do
-    #put the image as public
     assert {:ok, "image.png"} == DummyDefinition.store(@img)
-
-    #verify image is accessible
-    {:ok, {{_, 200, 'OK'}, _, _}} = :httpc.request(to_char_list(DummyDefinition.url(@img)))
-
-    #delete the image
-    Arc.Storage.S3.delete(DummyDefinition, :original, {Arc.File.new(@img), nil})
-
-    #verify image is not found
-    signed_url = Arc.Storage.S3.url(DummyDefinition, :original, {Arc.File.new(@img), nil}, [signed: true])
-    {:ok, {{_, 404, 'Not Found'}, _, _}} = :httpc.request(to_char_list(signed_url))
+    assert_public(DummyDefinition, "image.png")
+    delete_and_assert_not_found(DummyDefinition, "image.png")
   end
 
   @tag :s3
@@ -57,59 +101,33 @@ defmodule ArcTest.Storage.S3 do
   test "private put and signed get" do
     #put the image as private
     assert {:ok, "image.png"} == DummyDefinition.store({@img, :private})
-
-    unsigned_url = DummyDefinition.url(@img)
-
-    #verify image is not accessible
-    {:ok, {{_, 403, 'Forbidden'}, _, _}} = :httpc.request(to_char_list(unsigned_url))
-
-    #get a signed_url to the image
-    signed_url = DummyDefinition.url(@img, signed: true)
-
-    #verify image is accessible
-    {:ok, {{_, 200, 'OK'}, _, _}} = :httpc.request(to_char_list(signed_url))
-
-    #delete the image
-    Arc.Storage.S3.delete(DummyDefinition, :private, {Arc.File.new(@img), nil})
-
-    #verify image is not found
-    {:ok, {{_, 404, 'Not Found'}, _, _}} = :httpc.request(to_char_list(signed_url))
+    assert_private(DummyDefinition, "image.png")
+    delete_and_assert_not_found(DummyDefinition, "image.png")
   end
-
 
   @tag :s3
   @tag timeout: 15000
   test "content_type" do
-    assert {:ok, "image.png"} == DummyDefinition.store({@img, :with_content_type})
-
-    url = DummyDefinition.url(@img)
-
-    {:ok, {{_, 200, 'OK'}, headers, _}} = :httpc.request(to_char_list(url))
-
-    assert 'image/gif' == Enum.find_value(headers, fn(
-      {'content-type', value}) -> value
-      _ -> nil
-    end)
-
-    Arc.Storage.S3.delete(DummyDefinition, :original, {Arc.File.new(@img), :with_content_type})
+    {:ok, "image.png"} == DummyDefinition.store({@img, :with_content_type})
+    assert_header(DummyDefinition, "image.png", "content-type", "image/gif")
+    delete_and_assert_not_found(DummyDefinition, "image.png")
   end
 
   @tag :s3
   @tag timeout: 15000
   test "content_disposition" do
-    #put the image as private
-    assert {:ok, "image.png"} == DummyDefinition.store({@img, :with_content_disposition})
+    {:ok, "image.png"} == DummyDefinition.store({@img, :with_content_disposition})
+    assert_header(DummyDefinition, "image.png", "content-disposition", "attachment; filename=abc.png")
+    delete_and_assert_not_found(DummyDefinition, "image.png")
+  end
 
-    url = DummyDefinition.url(@img)
-
-    #verify image is not accessible
-    {:ok, {{_, 200, 'OK'}, headers, _}} = :httpc.request(to_char_list(url))
-
-    assert 'attachment; filename=abc.png' == Enum.find_value(headers, fn(
-      {'content-disposition', value}) -> value
-      _ -> nil
-    end)
-
-    Arc.Storage.S3.delete(DummyDefinition, :original, {Arc.File.new(@img), nil})
+  @tag :s3
+  @tag timeout: 150000
+  test "delete with scope" do
+    scope = %{id: 1}
+    {:ok, path} = DefinitionWithScope.store({"test/support/image.png", scope})
+    assert "https://s3.amazonaws.com/#{env_bucket}/uploads/with_scopes/1/image.png" == DefinitionWithScope.url({path, scope})
+    assert_public(DefinitionWithScope, {path, scope})
+    delete_and_assert_not_found(DefinitionWithScope, {path, scope})
   end
 end
