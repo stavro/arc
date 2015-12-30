@@ -11,9 +11,10 @@ defmodule Arc.Storage.S3 do
       definition.s3_object_headers(version, {file, scope})
       |> Dict.put(:acl, acl)
 
-    ExAws.S3.put_object(bucket, s3_key, binary, s3_options)
-
-    file.file_name
+    case ExAws.S3.put_object(bucket, s3_key, binary, s3_options) do
+      {:ok, _res}     -> {:ok, file.file_name}
+      {:error, error} -> {:error, error}
+    end
   end
 
   def url(definition, version, file_and_scope, options \\ []) do
