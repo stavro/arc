@@ -25,7 +25,6 @@ defmodule Arc.Actions.Store do
     case definition.validate({file, scope}) do
       true ->
         put_versions(definition, {file, scope})
-        {:ok, file.file_name}
       _ -> {:error, :invalid_file}
     end
   end
@@ -33,7 +32,13 @@ defmodule Arc.Actions.Store do
   defp put_versions(definition, {file, scope}) do
     definition.__versions
     |> Enum.map(fn(r) -> async_put_version(definition, r, {file, scope}) end)
-    |> Enum.each(fn(task) -> Task.await(task, version_timeout) end)
+    |> Enum.map(fn(task) -> Task.await(task, version_timeout) end)
+    |> handle_responses(file.file_name)
+  end
+
+  defp handle_responses(responses, filename) do
+    errors = Enum.filter(responses, fn(resp) -> elem(resp, 0) == :error end) |> Enum.map(fn(err) -> elem(err, 1) end)
+    if Enum.empty?(errors), do: {:ok, filename}, else: {:error,  errors}
   end
 
   defp version_timeout do
