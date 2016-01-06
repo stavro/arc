@@ -148,20 +148,12 @@ config :arc,
 Arc currently supports Amazon S3 and local destinations for file uploads.
 
 ### Local Configuration
+
+Change configuration to use `Arc.Storage.Local`.
+
 ```elixir
-defmodule Avatar do
-  use Arc.Definition
-
-  @versions [:original, :thumb]
-
-  def transform(:thumb, _) do
-    {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png"}
-  end
-
-   def __storage, do: Arc.Storage.Local
-
-   def filename(version,  file), do: "#{version}-#{file.file_name}"
-end
+config :arc,
+  storage: Arc.Storage.Local
 ```
 
 ### S3 Configuration
