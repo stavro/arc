@@ -4,9 +4,11 @@ defmodule ArcTest.Storage.Local do
 
   setup_all do
     File.mkdir_p("arctest/uploads")
+    Application.put_env :arc, :storage, Arc.Storage.Local
 
     on_exit fn ->
       File.rm_rf("arctest/uploads")
+      Application.put_env :arc, :storage, Arc.Storage.S3
     end
   end
 
@@ -19,7 +21,6 @@ defmodule ArcTest.Storage.Local do
     def transform(:original, _), do: {:noaction}
     def __versions, do: [:original, :thumb]
     def storage_dir(_, _), do: "arctest/uploads"
-    def __storage, do: Arc.Storage.Local
     def filename(:original, {file, _}), do: "original-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
     def filename(:thumb, {file, _}), do: "1/thumb-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
   end
