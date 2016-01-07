@@ -60,6 +60,7 @@ defmodule Arc.Storage.S3 do
   end
 
   defp bucket do
-    Application.fetch_env!(:arc, :bucket)
+    {:ok, bucket_name} = Application.fetch_env(:arc, :bucket)
+    bucket_name
   end
 end
