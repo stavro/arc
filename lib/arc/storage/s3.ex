@@ -6,7 +6,8 @@ defmodule Arc.Storage.S3 do
     s3_key = Path.join(destination_dir, file.file_name)
     binary = File.read!(file.path)
     acl = definition.acl(version, {file, scope})
-    ExAws.S3.put_object(bucket, s3_key, binary, [acl: acl])
+    content_type = file.file_name |> Path.extname |> String.replace(".", "") |> Plug.MIME.type
+    ExAws.S3.put_object(bucket, s3_key, binary, [acl: acl, content_type: content_type])
     file.file_name
   end
 
