@@ -8,7 +8,7 @@ defmodule Arc.Definition.Storage do
       def validate(_), do: true
       def default_url(version, _), do: default_url(version)
       def default_url(_), do: nil
-      def __storage, do: Arc.Storage.S3
+      def __storage, do: Application.get_env(:arc, :arc_storage)
 
       defoverridable [storage_dir: 2, filename: 2, validate: 1, default_url: 1, default_url: 2, __storage: 0]
 
