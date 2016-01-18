@@ -305,7 +305,7 @@ Avatar.url({nil, scope}) #=> "http://example.com/images/placeholders/profile_ima
 
 **Virtual Host**
 
-To support AWS regions other than US Standard, it is convenient to generate urls in the [`virtual_host`](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html) style.  This will generate urls in the style: `https://#{bucket}.s3.amazonaws.com` instead of `https://s3.amazonaws.com/#{bucket}`.
+To support AWS regions other than US Standard, it may be required to generate urls in the [`virtual_host`](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html) style.  This will generate urls in the style: `https://#{bucket}.s3.amazonaws.com` instead of `https://s3.amazonaws.com/#{bucket}`.
 
 To use this style of url generation, your bucket name must be DNS compliant.
 
@@ -328,6 +328,24 @@ In your application configuration, you'll need to provide an `asset_host` value:
 ```elixir
 config :arc,
   asset_host: "https://d3gav2egqolk5.cloudfront.net"
+```
+
+### Alternate S3 configuration example
+If you are using a region other than US-Standard, it is necessary to specify the correct configuration for `ex_aws`.  A full example configuration for both arc and ex_aws is as follows:
+
+```
+config :arc,
+  bucket: "my-frankfurt-bucket"
+
+config :ex_aws,
+  access_key_id: "my_access_key_id",
+  secret_access_key: "my_secret_access_key",
+  region: "eu-central-1",
+  s3: [
+    scheme: "https://",
+    host: "s3.eu-central-1.amazonaws.com",
+    region: "eu-central-1"
+  ]
 ```
 
 # Full Example
