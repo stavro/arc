@@ -6,4 +6,5 @@
   "meck": {:hex, :meck, "0.8.2"},
   "mimerl": {:hex, :mimerl, "1.0.2"},
   "mock": {:hex, :mock, "0.1.1"},
+  "poison": {:hex, :poison, "1.5.0"},
   "ssl_verify_hostname": {:hex, :ssl_verify_hostname, "1.0.5"}}

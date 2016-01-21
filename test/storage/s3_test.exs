@@ -38,7 +38,7 @@ defmodule ArcTest.Storage.S3 do
   @tag :s3
   test "public put and get" do
     #put the image as public
-    assert "image.png" == Arc.Storage.S3.put(DummyDefinition, :original, {Arc.File.new(@img), nil})
+    assert :ok == Arc.Storage.S3.put(DummyDefinition, :original, {Arc.File.new(@img), nil}) |> elem(0)
 
     #get a url to the image
     url = Arc.Storage.S3.url(DummyDefinition, :original, {Arc.File.new(@img), nil})
@@ -57,7 +57,7 @@ defmodule ArcTest.Storage.S3 do
   @tag :s3
   test "private put and signed get" do
     #put the image as private
-    assert "image.png" == Arc.Storage.S3.put(DummyDefinition, :private, {Arc.File.new(@img), nil})
+    assert :ok == Arc.Storage.S3.put(DummyDefinition, :private, {Arc.File.new(@img), nil}) |> elem(0)
 
     #get a url to the image
     url = Arc.Storage.S3.url(DummyDefinition, :private, {Arc.File.new(@img), nil})

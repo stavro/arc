@@ -7,7 +7,6 @@ defmodule Arc.Storage.S3 do
     binary = File.read!(file.path)
     acl = definition.acl(version, {file, scope})
     ExAws.S3.put_object(bucket, s3_key, binary, [acl: acl])
-    file.file_name
   end
 
   def url(definition, version, file_and_scope, options \\ []) do

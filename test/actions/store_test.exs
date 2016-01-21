@@ -21,26 +21,32 @@ defmodule ArcTest.Actions.Store do
   end
 
   test "single binary argument is interpreted as file path" do
-    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, nil}) -> :ok end] do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, nil}) -> {:ok, "resp"} end] do
       assert DummyDefinition.store(@img) == {:ok, "image.png"}
     end
   end
 
   test "two-tuple argument interpreted as path and scope" do
-    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> :ok end] do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> {:ok, "resp"} end] do
       assert DummyDefinition.store({@img, :scope}) == {:ok, "image.png"}
     end
   end
 
   test "map with a filename and path" do
-    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, nil}) -> :ok end] do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, nil}) -> {:ok, "resp"} end] do
       assert DummyDefinition.store(%{filename: "image.png", path: @img}) == {:ok, "image.png"}
     end
   end
 
   test "two-tuple with Plug.Upload and a scope" do
-    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> :ok end] do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> {:ok, "resp"} end] do
       assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:ok, "image.png"}
+    end
+  end
+
+  test "error from ExAws on upload to S3" do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> {:error, {:http_error, 404, "XML"}} end] do
+      assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:error, [{:http_error, 404, "XML"}, {:http_error, 404, "XML"}]}
     end
   end
 
