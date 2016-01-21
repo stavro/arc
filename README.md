@@ -348,6 +348,9 @@ config :ex_aws,
   ]
 ```
 
+> For your host configuration, please examine the approved [AWS Hostnames](http://docs.aws.amazon.com/general/latest/gr/rande.html).  There are often multiple hostname formats for AWS regions, and it will not work unless you specify the correct one.
+
+
 # Full Example
 
 ```elixir
