@@ -217,16 +217,37 @@ def acl(:thumb, _), do: :public_read
 
 Supported access control lists for Amazon S3 are:
 
-|ACL|Permissions Added to ACL|
-|---|---|
-|`:private`|Owner gets `FULL_CONTROL`. No one else has access rights (default).|
-|`:public_read`|Owner gets `FULL_CONTROL`. The `AllUsers` group gets READ access.|
-|`:public_read_write`|Owner gets `FULL_CONTROL`. The `AllUsers` group gets `READ` and `WRITE` access. Granting this on a bucket is generally not recommended.|
-|`:authenticated_read`|Owner gets `FULL_CONTROL`. The `AuthenticatedUsers` group gets `READ` access.|
-|`:bucket_owner_read`|Object owner gets `FULL_CONTROL`. Bucket owner gets `READ` access.|
-|`:bucket_owner_full_control`|Both the object owner and the bucket owner get `FULL_CONTROL` over the object.|
+| ACL                          | Permissions Added to ACL                                                                                                                |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `:private`                   | Owner gets `FULL_CONTROL`. No one else has access rights (default).                                                                     |
+| `:public_read`               | Owner gets `FULL_CONTROL`. The `AllUsers` group gets READ access.                                                                       |
+| `:public_read_write`         | Owner gets `FULL_CONTROL`. The `AllUsers` group gets `READ` and `WRITE` access. Granting this on a bucket is generally not recommended. |
+| `:authenticated_read`        | Owner gets `FULL_CONTROL`. The `AuthenticatedUsers` group gets `READ` access.                                                           |
+| `:bucket_owner_read`         | Object owner gets `FULL_CONTROL`. Bucket owner gets `READ` access.                                                                      |
+| `:bucket_owner_full_control` | Both the object owner and the bucket owner get `FULL_CONTROL` over the object.                                                          |
 
 For more information on the behavior of each of these, please consult Amazon's documentation for [Access Control List (ACL) Overview](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html).
+
+### S3 Object Headers
+
+The definition module may specify custom headers to pass through to S3 during object creation.  The available custom headers include:
+  *  :cache_control
+  *  :content_disposition
+  *  :content_encoding
+  *  :content_length
+  *  :content_type
+  *  :expect
+  *  :expires
+  *  :storage_class
+  *  :website_redirect_location
+
+As an example, to explicitly specify the content-type of an object, you may define a `s3_object_headers/2` function in your definition, which returns a Keyword list, or Map of desired headers.
+
+```elixir
+def s3_object_headers(version, {file, scope}) do
+  [content_type: Plug.MIME.path(file.file_name)] # for "image.png", would produce: "image/png"
+end
+```
 
 ### File Validation
 
@@ -402,7 +423,6 @@ Avatar.url({"selfie.png", current_user}, :thumb) #=> "https://s3.amazonaws.com/b
 Contributions are welcome.  Here is my current roadmap:
 
   * Object deletion
-  * Cache-control headers
   * Ease migration for version (or acl) changes
   * Alternative storage destinations (eg, Filesystem)
   * Solidify public API

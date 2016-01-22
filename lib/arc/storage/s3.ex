@@ -6,7 +6,13 @@ defmodule Arc.Storage.S3 do
     s3_key = Path.join(destination_dir, file.file_name)
     binary = File.read!(file.path)
     acl = definition.acl(version, {file, scope})
-    ExAws.S3.put_object(bucket, s3_key, binary, [acl: acl])
+
+    s3_options =
+      definition.s3_object_headers(version, {file, scope})
+      |> Dict.put(:acl, acl)
+
+    ExAws.S3.put_object(bucket, s3_key, binary, s3_options)
+
     file.file_name
   end
 

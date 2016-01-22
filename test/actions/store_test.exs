@@ -52,5 +52,7 @@ defmodule ArcTest.Actions.Store do
         assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:ok, "image.png"}
       end
     end
+
+    Application.put_env :arc, :version_timeout, 15_000
   end
 end

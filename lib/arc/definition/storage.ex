@@ -19,6 +19,7 @@ defmodule Arc.Definition.Storage do
   defmacro __before_compile__(_env) do
     quote do
       def acl(_, _), do: @acl
+      def s3_object_headers(_, _), do: []
     end
   end
 end
