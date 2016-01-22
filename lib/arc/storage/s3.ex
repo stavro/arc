@@ -6,7 +6,15 @@ defmodule Arc.Storage.S3 do
     s3_key = Path.join(destination_dir, file.file_name)
     binary = File.read!(file.path)
     acl = definition.acl(version, {file, scope})
-    ExAws.S3.put_object(bucket, s3_key, binary, [acl: acl])
+
+    options = definition.options(version, {file, scope})
+              |> Map.to_list
+              |> Enum.filter fn(e) -> elem(e, 1) != nil end
+
+    # Stuff that's not metadata
+    options = [acl: acl] ++ options
+
+    ExAws.S3.put_object(bucket, s3_key, binary, options)
     file.file_name
   end
 

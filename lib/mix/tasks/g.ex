@@ -65,6 +65,20 @@ defmodule Mix.Tasks.Arc do
       # def default_url(version, scope) do
       #   "/images/avatars/default_\#{version}.png"
       # end
+
+      # Fine tune how your file is stored
+      # Elements with value nil will get ignored
+      # def options(version, {file, scope}) do
+      #   %{content_disposition: nil,
+      #     content_encoding: nil,
+      #     content_length: nil,
+      #     content_type: nil,
+      #     expect: nil,
+      #     storage_class: "STANDARD", # maybe REDUCED_REDUNDANCY?
+      #     website_redirect_location: nil,
+      #     encryption: nil,
+      #     meta: nil} # [{"Your-Key", "Your-Value"}]
+      # end
     end
     """
 

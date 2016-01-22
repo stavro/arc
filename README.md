@@ -217,14 +217,14 @@ def acl(:thumb, _), do: :public_read
 
 Supported access control lists for Amazon S3 are:
 
-|ACL|Permissions Added to ACL|
-|---|---|
-|`:private`|Owner gets `FULL_CONTROL`. No one else has access rights (default).|
-|`:public_read`|Owner gets `FULL_CONTROL`. The `AllUsers` group gets READ access.|
-|`:public_read_write`|Owner gets `FULL_CONTROL`. The `AllUsers` group gets `READ` and `WRITE` access. Granting this on a bucket is generally not recommended.|
-|`:authenticated_read`|Owner gets `FULL_CONTROL`. The `AuthenticatedUsers` group gets `READ` access.|
-|`:bucket_owner_read`|Object owner gets `FULL_CONTROL`. Bucket owner gets `READ` access.|
-|`:bucket_owner_full_control`|Both the object owner and the bucket owner get `FULL_CONTROL` over the object.|
+| ACL                          | Permissions Added to ACL                                                                                                                |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| `:private`                   | Owner gets `FULL_CONTROL`. No one else has access rights (default).                                                                     |
+| `:public_read`               | Owner gets `FULL_CONTROL`. The `AllUsers` group gets READ access.                                                                       |
+| `:public_read_write`         | Owner gets `FULL_CONTROL`. The `AllUsers` group gets `READ` and `WRITE` access. Granting this on a bucket is generally not recommended. |
+| `:authenticated_read`        | Owner gets `FULL_CONTROL`. The `AuthenticatedUsers` group gets `READ` access.                                                           |
+| `:bucket_owner_read`         | Object owner gets `FULL_CONTROL`. Bucket owner gets `READ` access.                                                                      |
+| `:bucket_owner_full_control` | Both the object owner and the bucket owner get `FULL_CONTROL` over the object.                                                          |
 
 For more information on the behavior of each of these, please consult Amazon's documentation for [Access Control List (ACL) Overview](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html).
 
@@ -402,7 +402,6 @@ Avatar.url({"selfie.png", current_user}, :thumb) #=> "https://s3.amazonaws.com/b
 Contributions are welcome.  Here is my current roadmap:
 
   * Object deletion
-  * Cache-control headers
   * Ease migration for version (or acl) changes
   * Alternative storage destinations (eg, Filesystem)
   * Solidify public API
