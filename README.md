@@ -14,7 +14,7 @@ Add the latest stable release to your `mix.exs` file:
 ```elixir
 defp deps do
   [
-    arc: "~> 0.2.3",
+    arc: "~> 0.3.0",
     ex_aws: "~> 0.4.10", # Required if using Amazon S3
     httpoison: "~> 0.7"  # Required if using Amazon S3
   ]
@@ -289,6 +289,23 @@ end
 def filename(version, _), do: version
 ```
 
+## Object Deletion
+
+After an object is stored through Arc, you may optionally remove it.  To remove a stored object, pass the same path identifier and scope from which you stored the object.
+
+Example:
+
+```elixir
+# Without a scope:
+{:ok, path} = DummyDefinition.store("/Images/me.png")
+:ok = DummyDefinition.delete(path)
+
+# With a scope:
+user = Repo.get! User, 1
+{:ok, path} = DummyDefinition.store({"/Images/me.png", user})
+:ok = DummyDefinition.delete({path, user})
+```
+
 ## Url Generation
 
 Saving your files is only the first half of any decent storage solution.  Straightforward access to your uploaded files is equally as important as storing them in the first place.
@@ -422,7 +439,6 @@ Avatar.url({"selfie.png", current_user}, :thumb) #=> "https://s3.amazonaws.com/b
 
 Contributions are welcome.  Here is my current roadmap:
 
-  * Object deletion
   * Ease migration for version (or acl) changes
   * Alternative storage destinations (eg, Filesystem)
   * Solidify public API
