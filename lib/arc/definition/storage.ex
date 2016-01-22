@@ -8,9 +8,18 @@ defmodule Arc.Definition.Storage do
       def validate(_), do: true
       def default_url(version, _), do: default_url(version)
       def default_url(_), do: nil
+      def options(_, _), do: %{content_disposition: nil,
+                               content_encoding: nil,
+                               content_length: nil,
+                               content_type: nil,
+                               expect: nil,
+                               storage_class: "STANDARD",
+                               website_redirect_location: nil,
+                               encryption: nil,
+                               meta: nil}
       def __storage, do: Arc.Storage.S3
 
-      defoverridable [storage_dir: 2, filename: 2, validate: 1, default_url: 1, default_url: 2, __storage: 0]
+      defoverridable [storage_dir: 2, filename: 2, options: 2, validate: 1, default_url: 1, default_url: 2, __storage: 0]
 
       @before_compile Arc.Definition.Storage
     end
