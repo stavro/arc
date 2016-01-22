@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.3 (2016-01-22)
+  * (Enhancement) Allow specifying custom s3 object headers through the definition module via `s3_object_headers/2`.
+
 ## v0.2.2 (12-14-2015)
   * (Enhancement) Allow the version transformation and storage timeout to be specified in configuration `config :arc, version_timeout: 15_000`.
 
