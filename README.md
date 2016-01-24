@@ -160,7 +160,7 @@ defmodule Avatar do
 
    def __storage, do: Arc.Storage.Local
 
-   def filename(version,  file), do: "#{version}-#{file.file_name}"
+   def filename(version,  {file, scope}), do: "#{version}-#{file.file_name}"
 end
 ```
 
