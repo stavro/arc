@@ -1,9 +1,16 @@
 # Changelog
 
+## v0.4.0 (2016-02-25)
+  * (Bugfix) Surface errors from ExAws put operations.  Parse ExAws errors and return tuple of form `{:error, List.t}` when an error is encountered.
+
+To upgrade and properly support parsing aws errors, add `:poison` to your list of dependencies.
+
+> Optional dependency added, prompting a minor version bump.  While not a strict backwards incompatibility, Arc users should take note of the change as more than an internal change.
+
 ## v0.3.0 (2016-01-22)
   * (Enhancement) Introduce `Definition.delete/2`
 
-> While there is no strict backwards incompatibility with the public API, a number of users have been using Arc.Storage.S3.delete as a public API due to a lack of a fully supported delete method.  This internal method has now changed slightly, thus prompting more than a patch release.
+> While there is no strict backwards incompatibility with the public API, a number of users have been using `Arc.Storage.S3.delete/3` as a public API due to a lack of a fully supported delete method.  This internal method has now changed slightly, thus prompting more than a patch release.
 
 ## v0.2.3 (2016-01-22)
   * (Enhancement) Allow specifying custom s3 object headers through the definition module via `s3_object_headers/2`.

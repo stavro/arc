@@ -108,7 +108,7 @@ defmodule ArcTest.Storage.S3 do
   @tag :s3
   @tag timeout: 15000
   test "content_type" do
-    {:ok, "image.png"} == DummyDefinition.store({@img, :with_content_type})
+    {:ok, "image.png"} = DummyDefinition.store({@img, :with_content_type})
     assert_header(DummyDefinition, "image.png", "content-type", "image/gif")
     delete_and_assert_not_found(DummyDefinition, "image.png")
   end
@@ -116,7 +116,7 @@ defmodule ArcTest.Storage.S3 do
   @tag :s3
   @tag timeout: 15000
   test "content_disposition" do
-    {:ok, "image.png"} == DummyDefinition.store({@img, :with_content_disposition})
+    {:ok, "image.png"} = DummyDefinition.store({@img, :with_content_disposition})
     assert_header(DummyDefinition, "image.png", "content-disposition", "attachment; filename=abc.png")
     delete_and_assert_not_found(DummyDefinition, "image.png")
   end
@@ -129,5 +129,14 @@ defmodule ArcTest.Storage.S3 do
     assert "https://s3.amazonaws.com/#{env_bucket}/uploads/with_scopes/1/image.png" == DefinitionWithScope.url({path, scope})
     assert_public(DefinitionWithScope, {path, scope})
     delete_and_assert_not_found(DefinitionWithScope, {path, scope})
+  end
+
+  @tag :s3
+  @tag timeout: 150000
+  test "put with error" do
+    Application.put_env(:arc, :bucket, "unknown-bucket")
+    {:error, res} = DummyDefinition.store("test/support/image.png")
+    Application.put_env :arc, :bucket, env_bucket
+    assert res
   end
 end
