@@ -4,7 +4,7 @@ defmodule Arc.Storage.Local do
     path = Path.join(destination_dir, file.file_name)
     path |> Path.dirname() |> File.mkdir_p()
     File.copy!(file.path, path)
-    file.file_name
+    {:ok, file.file_name}
   end
 
   def url(definition, version, file_and_scope, options \\ []) do
