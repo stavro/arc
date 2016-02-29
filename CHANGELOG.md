@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4.1 (2016-02-28)
+  * (Bugfix) Fix regression using the local filesystem introduced via v0.4.0.
+
 ## v0.4.0 (2016-02-25)
   * (Bugfix) Surface errors from ExAws put operations.  Parse ExAws errors and return tuple of form `{:error, List.t}` when an error is encountered.
 
