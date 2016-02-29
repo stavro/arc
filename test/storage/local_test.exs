@@ -25,8 +25,8 @@ defmodule ArcTest.Storage.Local do
   end
 
   test "put, delete, get" do
-    assert "original-image.png" == Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{filename: "original-image.png", path: @img}), nil})
-    assert "1/thumb-image.png" == Arc.Storage.Local.put(DummyDefinition, :thumb, {Arc.File.new(%{filename: "1/thumb-image.png", path: @img}), nil})
+    assert {:ok, "original-image.png"} == Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{filename: "original-image.png", path: @img}), nil})
+    assert {:ok, "1/thumb-image.png"} == Arc.Storage.Local.put(DummyDefinition, :thumb, {Arc.File.new(%{filename: "1/thumb-image.png", path: @img}), nil})
 
     assert File.exists?("arctest/uploads/original-image.png")
     assert File.exists?("arctest/uploads/1/thumb-image.png")
