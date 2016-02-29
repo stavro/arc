@@ -9,6 +9,7 @@ defmodule ArcTest.Processor do
     def validate({file, _}), do: String.ends_with?(file.file_name, ".png")
     def transform(:original, _), do: {:noaction}
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
+    def transform(:med, _), do: {:convert, fn(in_path, out_path) -> "#{in_path} -strip -thumbnail 10x10 #{out_path}" end, :jpg}
     def __versions, do: [:original, :thumb]
   end
 
@@ -28,6 +29,14 @@ defmodule ArcTest.Processor do
 
   test "transforms a copied version of file according to the specified transformation" do
     new_file = Arc.Processor.process(DummyDefinition, :thumb, {Arc.File.new(@img), nil})
+    assert new_file.path != @img
+    assert "128x128" == geometry(@img) #original file untouched
+    assert "10x10" == geometry(new_file.path)
+    cleanup(new_file.path)
+  end
+
+  test "transforms a copied version of file according to the specified function transformation" do
+    new_file = Arc.Processor.process(DummyDefinition, :med, {Arc.File.new(@img), nil})
     assert new_file.path != @img
     assert "128x128" == geometry(@img) #original file untouched
     assert "10x10" == geometry(new_file.path)
