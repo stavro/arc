@@ -8,7 +8,7 @@ defmodule ArcTest.Actions.Store do
     use Arc.Definition.Storage
 
     def validate({file, _}), do: String.ends_with?(file.file_name, ".png")
-    def transform(_, _), do: {:noaction}
+    def transform(_, _), do: :noaction
     def __versions, do: [:original, :thumb]
   end
 

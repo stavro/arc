@@ -13,6 +13,16 @@ defmodule ArcTest.Storage.S3 do
     def s3_object_headers(:original, {_, :with_content_disposition}), do: %{content_disposition: "attachment; filename=abc.png"}
   end
 
+  defmodule DefinitionWithThumbnail do
+    use Arc.Definition
+    @versions [:thumb]
+    @acl :public_read
+
+    def transform(:thumb, _) do
+      {"convert", "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format jpg", :jpg}
+    end
+  end
+
   defmodule DefinitionWithScope do
     use Arc.Definition
     @acl :public_read
@@ -67,6 +77,16 @@ defmodule ArcTest.Storage.S3 do
       {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_char_list(url))
       assert code == 200
       assert msg == 'OK'
+    end
+  end
+
+  defmacro assert_public_with_extension(definition, args, version, extension) do
+    quote bind_quoted: [definition: definition, version: version, args: args, extension: extension] do
+      url = definition.url(args, version)
+      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_char_list(url))
+      assert code == 200
+      assert msg == 'OK'
+      assert Path.extname(url) == extension
     end
   end
 
@@ -138,5 +158,13 @@ defmodule ArcTest.Storage.S3 do
     {:error, res} = DummyDefinition.store("test/support/image.png")
     Application.put_env :arc, :bucket, env_bucket
     assert res
+  end
+
+  @tag :s3
+  @tag timeout: 150000
+  test "put with converted version" do
+    assert {:ok, "image.png"} == DefinitionWithThumbnail.store(@img)
+    assert_public_with_extension(DefinitionWithThumbnail, "image.png", :thumb, ".jpg")
+    delete_and_assert_not_found(DefinitionWithThumbnail, "image.png")
   end
 end
