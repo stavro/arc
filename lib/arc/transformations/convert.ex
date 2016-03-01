@@ -1,10 +1,10 @@
 defmodule Arc.Transformations.Convert do
-  def apply(file, args) do
-    new_path = temp_path
+  def apply(cmd, file, args) do
+    new_path     = temp_path
+    esc_new_path = String.replace(new_path, " ", "\\ ")
+    args         = if is_function(args), do: args.(file.path, esc_new_path),  else: "#{file.path} #{args} #{esc_new_path}"
 
-    System.cmd("convert",
-      ~w(#{file.path} #{args} #{String.replace(new_path, " ", "\\ ")}),
-      stderr_to_stdout: true)
+    System.cmd(to_string(cmd), ~w(#{args}), stderr_to_stdout: true)
     |> handle_exit_code
 
     %Arc.File{file | path: new_path}

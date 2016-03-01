@@ -11,12 +11,8 @@ defmodule Arc.Definition.Versioning do
     conversion = definition.transform(version, {file, scope})
 
     case conversion do
-      {:noaction} -> "#{name}#{Path.extname(file.file_name)}"
-      {:convert, args} ->
-        extension = case Regex.run(~r/-format[ ]*(\w*)/, args) do
-          nil -> "#{name}#{Path.extname(file.file_name)}"
-          [_, ext] -> "#{name}.#{ext}"
-        end
+      {_, _, ext} -> "#{name}.#{ext}"
+       _          -> "#{name}#{Path.extname(file.file_name)}"
     end
   end
 
