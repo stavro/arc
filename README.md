@@ -136,7 +136,8 @@ end
 ```
 
 Other examples:
-```
+
+```elixir
 # Change the file extension through ImageMagick's `format` parameter:
 {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
 
@@ -154,7 +155,7 @@ For more information on defining your transformation, please consult [ImageMagic
 
 Common transformations of uploaded videos can be also defined through your definition module:
 
-```
+```elixir
 # To take a thumbnail from a video:
 {:ffmpeg, fn(input, output) -> "-i #{input} -f jpg #{output}" end, :jpg}
 
