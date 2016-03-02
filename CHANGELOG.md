@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.5.1 (2016-03-02)
+  * (Enhancement) Raise a more helpful error message when attempting a transformation with an executable which cannot be found.
+
 ## v0.5.0 (2016-03-02)
   * (Enhancement) Allow transforms via arbitrary system executables.
   * (Enhancement) Allow transforms to supply a function to define the transformation args.
