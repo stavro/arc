@@ -23,6 +23,12 @@ defmodule ArcTest.Processor do
     def __versions, do: [:original, :thumb]
   end
 
+  defmodule MissingExecutableDefinition do
+    use Arc.Definition
+
+    def transform(:original, _), do: {:blah, ""}
+  end
+
   test "returns the original path for :noaction transformations" do
     assert Arc.Processor.process(DummyDefinition, :original, {Arc.File.new(@img), nil}).path == @img
   end
@@ -46,6 +52,12 @@ defmodule ArcTest.Processor do
   test "raises an error in an invalid transformation" do
     assert_raise Arc.ConvertError, ~r"unrecognized option", fn ->
       Arc.Processor.process(BrokenDefinition, :thumb, {Arc.File.new(@img), nil})
+    end
+  end
+
+  test "raises an error if the given transformation executable cannot be found" do
+    assert_raise Arc.MissingExecutableError, ~r"blah", fn ->
+      Arc.Processor.process(MissingExecutableDefinition, :original, {Arc.File.new(@img), nil})
     end
   end
 
