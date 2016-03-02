@@ -16,7 +16,7 @@ defmodule ArcTest.Storage.Local do
     use Arc.Actions.Url
     @acl :public_read
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
-    def transform(:original, _), do: {:noaction}
+    def transform(:original, _), do: :noaction
     def __versions, do: [:original, :thumb]
     def storage_dir(_, _), do: "arctest/uploads"
     def __storage, do: Arc.Storage.Local

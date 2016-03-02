@@ -14,7 +14,7 @@ Add the latest stable release to your `mix.exs` file:
 ```elixir
 defp deps do
   [
-    arc: "~> 0.4.1",
+    arc: "~> 0.5.0",
     ex_aws: "~> 0.4.10", # Required if using Amazon S3
     httpoison: "~> 0.7"  # Required if using Amazon S3
     poison: "~> 1.2"     # Required if using Amazon S3
@@ -103,15 +103,25 @@ Avatar.store({%Plug.Upload{}, scope}) #=> {:ok, "file.png"}
 
 This scope will be available throughout the definition module to be used as an input to the storage parameters (eg, store files in `/uploads/#{scope.id}`).
 
-## Image Transformations
+## Transformations
 
-As images are one of the most commonly uploaded filetypes, Arc has a convenient integration with ImageMagick's `convert` tool for manipulation of images.  Each upload definition may specify as many versions as desired, along with the corresponding transformation for each version.
+Arc can be used to facilitate transformations of uploaded files via any system executable.  Some common operations you may want to take on uploaded files include resizing an uploaded avatar with ImageMagick or extracting a still image from a video with FFmpeg.
 
 To transform an image, the definition module must define a `transform/2` function which accepts a version atom and a tuple consisting of the uploaded file and corresponding scope.
 
-The expected return value of a `transform` function call must either be `{:noaction}`, in which case the original file will be stored as-is, or `{:convert, transformation}` in which the original file will be processed via ImageMagick's `convert` tool with the corresponding transformation parameters.
+This transform handler accepts the version atom, as well as the file/scope argument, and is responsible for returning one of the following:
+  * `:noaction` - The original file will be stored as-is.
+  * `{executable, args}` - The `executable` will be called with `System.cmd` with the format `#{original_file_path} #{args} #{transformed_file_path}`.
+  * `{executable, fn(input, output) -> args end}` - If your executable expects arguments in a format other than the above, you may supply a function to the conversion tuple which will be invoked to generate the arguments.
+  * `{executable, args, output_extension}` - If your transformation changes the file extension (eg, converting to `png`), then the new file extension must be explicit.
 
-Example:
+### ImageMagick transformations
+
+As images are one of the most commonly uploaded filetypes, Arc has a recommended integration with ImageMagick's `convert` tool for manipulation of images.  Each upload definition may specify as many versions as desired, along with the corresponding transformation for each version.
+
+The expected return value of a `transform` function call must either be `:noaction`, in which case the original file will be stored as-is, or `{:convert, transformation}` in which the original file will be processed via ImageMagick's `convert` tool with the corresponding transformation parameters.
+
+The following example stores the original file, as well as a squared 100x100 thumbnail version which is stripped of comments (eg, GPS coordinates):
 
 ```elixir
 defmodule Avatar do
@@ -120,18 +130,37 @@ defmodule Avatar do
   @versions [:original, :thumb]
 
   def transform(:thumb, _) do
-    {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png"}
+    {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100"}
   end
 end
 ```
 
-The example above stores the original file, as well as a squared 100x100 thumbnail version which is stripped of comments (eg, GPS coordinates).
+Other examples:
+```
+# Change the file extension through ImageMagick's `format` parameter:
+{:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
+
+# Take the first frame of a gif and process it into a square jpg:
+{:convert, fn(input, output) -> "#{input}[0] -strip -thumbnail 100x100^ -gravity center -extent 100x100 -format jpg #{output}", :jpg}
+```
 
 For more information on defining your transformation, please consult [ImageMagick's convert documentation](http://www.imagemagick.org/script/convert.php).
 
 > **Note**: Keep this transformation function simple and deterministic based on the version, file name, and scope object. The `transform` function is subsequently called during URL generation, and the transformation is scanned for the output file format.  As such, if you conditionally format the image as a `png` or `jpg` depending on the time of day, you will be displeased with the result of Arc's URL generation.
 
 > **System Resources**: If you are accepting arbitrary uploads on a public site, it may be prudent to add system resource limits to prevent overloading your system resources from malicious or nefarious files.  Since all processing is done directly in ImageMagick, you may pass in system resource restrictions through the [-limit](http://www.imagemagick.org/script/command-line-options.php#limit) flag.  One such example might be: `-limit area 10MB -limit disk 100MB`.
+
+### FFmpeg transformations
+
+Common transformations of uploaded videos can be also defined through your definition module:
+
+```
+# To take a thumbnail from a video:
+{:ffmpeg, fn(input, output) -> "-i #{input} -f jpg #{output}" end, :jpg}
+
+# To convert a video to an animated gif
+{:ffmpeg, fn(input, output) -> "-i #{input} -f gif #{output}" end, :gif}
+```
 
 ### Asynchronous File Uploading
 
@@ -156,7 +185,7 @@ defmodule Avatar do
   @versions [:original, :thumb]
 
   def transform(:thumb, _) do
-    {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png"}
+    {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
   end
 
    def __storage, do: Arc.Storage.Local
@@ -407,7 +436,7 @@ defmodule Avatar do
   end
 
   def transform(:thumb, _) do
-    {:convert, "-thumbnail 100x100^ -gravity center -extent 100x100 -format png"}
+    {:convert, "-thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
   end
 
   def filename(version, _) do

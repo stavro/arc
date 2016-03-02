@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.5.0 (2016-03-02)
+  * (Enhancement) Allow transforms via arbitrary system executables.
+  * (Enhancement) Allow transforms to supply a function to define the transformation args.
+  * (Deprecation) Deprecate usage of {:noaction} in favor of :noaction for transformation responses.
+
+Upgrade instructions from 0.4.x to 0.5.x:
+
+Arc now favors explicitness in file extension changes rather than scanning with a Regex.  If you have a `convert` transformation which changes the file extension (through the parameter `-format png` argument), you must explicitly add a third tuple argument in the conversion noting the final extension.
+
+Example:
+
+```elixir
+# Change this:
+  def transform(:thumb, _) do
+    {:convert, "-strip -thumbnail 250x250^ -gravity center -extent 250x250 -format png"}
+  end
+
+# To this:
+  def transform(:thumb, _) do
+    {:convert, "-strip -thumbnail 250x250^ -gravity center -extent 250x250 -format png", :png} #<--- Note the third tuple argument with the output file extension
+  end
+```
+
+
 ## v0.4.1 (2016-02-28)
   * (Bugfix) Fix regression using the local filesystem introduced via v0.4.0.
 
