@@ -38,4 +38,22 @@ defmodule ArcTest.Storage.Local do
     refute File.exists?("arctest/uploads/original-image.png")
     refute File.exists?("arctest/uploads/1/thumb-image.png")
   end
+
+  test "local_dir option" do
+    local_dir = "arctest/uploads/local_dir"
+    Application.put_env :arc, :local_dir, local_dir
+
+    assert {:ok, "original-image.png"} == Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{filename: "original-image.png", path: @img}), nil})
+    assert {:ok, "1/thumb-image.png"} == Arc.Storage.Local.put(DummyDefinition, :thumb, {Arc.File.new(%{filename: "1/thumb-image.png", path: @img}), nil})
+
+    assert File.exists?("#{local_dir}/arctest/uploads/original-image.png")
+    assert File.exists?("#{local_dir}/arctest/uploads/1/thumb-image.png")
+    assert "#{local_dir}/arctest/uploads/original-image.png" == DummyDefinition.url("image.png", :original)
+    assert "#{local_dir}/arctest/uploads/1/thumb-image.png" == DummyDefinition.url("1/image.png", :thumb)
+
+    Arc.Storage.Local.delete(DummyDefinition, :original, {%{file_name: "image.png"}, nil})
+    Arc.Storage.Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
+    refute File.exists?("#{local_dir}/arctest/uploads/original-image.png")
+    refute File.exists?("#{local_dir}/arctest/uploads/1/thumb-image.png")
+  end
 end
