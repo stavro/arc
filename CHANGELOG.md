@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.5.2 (2016-04-27)
+  * (Enhancement) Allow returning a list of arguments for transformations to preserve desired groupings.
+
 ## v0.5.1 (2016-03-02)
   * (Enhancement) Raise a more helpful error message when attempting a transformation with an executable which cannot be found.
 
