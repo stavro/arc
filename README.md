@@ -40,12 +40,12 @@ Then run `mix deps.get` in your shell to fetch the dependencies.
 
 ### Usage with Ecto
 
-Arc comes with a companion package for use with Ecto.  If you intend to use Arc with Ecto, it is highly recommended you also add the [`arc_ecto`](https://github.com/stavro/arc_ecto) dependency.  Benefits include:
+Arc comes with a companion package for use with Ecto. If you intend to use Arc with Ecto, it is highly recommended you also add the [`arc_ecto`](https://github.com/stavro/arc_ecto) dependency. Benefits include:
 
   * Changeset integration
   * Versioned urls for cache busting (`.../thumb.png?v=63601457477`)
 
-# Getting Started: Defining your Upload
+# Getting Started: Defining an Uploader
 
 Arc requires a **definition module** which contains the relevant configuration to store and retrieve your files.
 
@@ -56,10 +56,10 @@ This definition module contains relevant functions to determine:
   * How to secure your files (private? Or publically accessible?)
   * Default placeholders
 
-To start off, generate an attachment definition:
+To start off, generate an attachment uploader:
 
 ```bash
-mix arc.g avatar
+mix arc.gen.uploader avatar
 ```
 
 This should give you a basic file in:
@@ -77,7 +77,7 @@ There are two supported use-cases of Arc currently:
   1. As a general file store, or
   2. As an attachment to another model (the attached model is referred to as a `scope`)
 
-The upload definition file responds to `Avatar.store/1` which accepts either:
+The new `Avatar` module defines `store/1` which accepts either:
 
   * A path to a file
   * A map with a filename and path keys (eg, a `%Plug.Upload{}`)
@@ -125,7 +125,7 @@ The following example stores the original file, as well as a squared 100x100 thu
 
 ```elixir
 defmodule Avatar do
-  use Arc.Definition
+  use Arc
 
   @versions [:original, :thumb]
 
@@ -181,7 +181,7 @@ Arc currently supports Amazon S3 and local destinations for file uploads.
 ### Local Configuration
 ```elixir
 defmodule Avatar do
-  use Arc.Definition
+  use Arc
 
   @versions [:original, :thumb]
 
@@ -189,9 +189,9 @@ defmodule Avatar do
     {:convert, "-strip -thumbnail 100x100^ -gravity center -extent 100x100 -format png", :png}
   end
 
-   def __storage, do: Arc.Storage.Local
+  def __storage, do: Arc.Storage.Local
 
-   def filename(version,  {file, scope}), do: "#{version}-#{file.file_name}"
+  def filename(version,  {file, scope}), do: "#{version}-#{file.file_name}"
 end
 ```
 
@@ -288,7 +288,7 @@ Arc delegates validation to a `validate/1` function with a tuple of the file and
 
 ```elixir
 defmodule Avatar do
-  use Arc.Definition
+  use Arc
   @extension_whitelist ~w(.jpg .jpeg .gif .png)
 
   def validate({file, _}) do   
@@ -424,7 +424,7 @@ config :ex_aws,
 
 ```elixir
 defmodule Avatar do
-  use Arc.Definition
+  use Arc
 
   @versions [:original, :thumb]
   @extension_whitelist ~w(.jpg .jpeg .gif .png)
