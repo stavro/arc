@@ -3,7 +3,7 @@ defmodule ArcTest.Storage.S3 do
   @img "test/support/image.png"
 
   defmodule DummyDefinition do
-    use Arc.Definition
+    use Arc
 
     @acl :public_read
     def storage_dir(_, _), do: "arctest/uploads"
@@ -14,7 +14,7 @@ defmodule ArcTest.Storage.S3 do
   end
 
   defmodule DefinitionWithThumbnail do
-    use Arc.Definition
+    use Arc
     @versions [:thumb]
     @acl :public_read
 
@@ -24,7 +24,7 @@ defmodule ArcTest.Storage.S3 do
   end
 
   defmodule DefinitionWithScope do
-    use Arc.Definition
+    use Arc
     @acl :public_read
     def storage_dir(_, {_, scope}), do: "uploads/with_scopes/#{scope.id}"
   end

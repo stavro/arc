@@ -24,7 +24,7 @@ defmodule ArcTest.Processor do
   end
 
   defmodule MissingExecutableDefinition do
-    use Arc.Definition
+    use Arc
 
     def transform(:original, _), do: {:blah, ""}
   end
