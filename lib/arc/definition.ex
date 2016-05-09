@@ -1,5 +1,5 @@
 defmodule Arc.Definition do
-  defmacro __using__(options) do
+  defmacro __using__(_options) do
     quote do
       use Arc.Definition.Versioning
       use Arc.Definition.Storage
