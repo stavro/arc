@@ -23,8 +23,8 @@ defmodule Arc.Actions.Store do
 
   defp put(definition, {%Arc.File{}=file, scope}) do
     case definition.validate({file, scope}) do
-      true -> put_versions(definition, {file, scope})
-      _    -> {:error, :invalid_file}
+      {:ok, _} -> put_versions(definition, {file, scope})
+      {:error, error}    -> {:error, error}
     end
   end
 
