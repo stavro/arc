@@ -25,7 +25,6 @@ defmodule Arc.Storage.S3 do
   end
 
   def delete(definition, version, {file, scope}) do
-    destination_dir = definition.storage_dir(version, {file, scope})
     ExAws.S3.delete_object bucket, s3_key(definition, version, {file, scope})
   end
 
@@ -33,7 +32,7 @@ defmodule Arc.Storage.S3 do
   # Private
   #
 
-  defp build_url(definition, version, file_and_scope, options) do
+  defp build_url(definition, version, file_and_scope, _options) do
     Path.join host, s3_key(definition, version, file_and_scope)
   end
 

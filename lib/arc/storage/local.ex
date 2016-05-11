@@ -7,7 +7,7 @@ defmodule Arc.Storage.Local do
     {:ok, file.file_name}
   end
 
-  def url(definition, version, file_and_scope, options \\ []) do
+  def url(definition, version, file_and_scope, _options \\ []) do
     build_local_path(definition, version, file_and_scope)
   end
 

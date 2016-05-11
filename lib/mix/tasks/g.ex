@@ -13,7 +13,6 @@ defmodule Mix.Tasks.Arc do
     def run([model_name]) do
       app_name = Mix.Project.config[:app]
       project_module_name = camelize(to_string(app_name))
-      model_destination = Path.join(System.cwd(), "/web/uploaders/#{underscore(model_name)}.ex")
       generate_uploader_file(model_name, project_module_name)
     end
 
