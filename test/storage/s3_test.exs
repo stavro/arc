@@ -100,6 +100,8 @@ defmodule ArcTest.Storage.S3 do
     Application.put_env :ex_aws, :secret_access_key,  System.get_env("ARC_TEST_S3_SECRET")
   end
 
+  @tag :s3
+  @tag timeout: 15000
   test "virtual_host" do
     Application.put_env :arc, :virtual_host, true
     assert "https://#{env_bucket}.s3.amazonaws.com/arctest/uploads/image.png" == DummyDefinition.url(@img)
