@@ -67,6 +67,10 @@ defmodule Arc.Storage.S3 do
 
   defp bucket do
     {:ok, bucket_name} = Application.fetch_env(:arc, :bucket)
-    bucket_name
+
+    case bucket_name do
+      {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
+      name -> name
+    end
   end
 end
