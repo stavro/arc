@@ -1,9 +1,15 @@
 defmodule Arc.File do
   defstruct [:path, :file_name, :binary]
 
-  def temp_path do
-    rand = Base.encode32(:crypto.rand_bytes(20))
-    Path.join(System.tmp_dir, rand)
+  def generate_temporary_path(file \\ nil) do
+    extension = Path.extname((file && file.path) || "")
+
+    file_name =
+      :crypto.rand_bytes(20)
+      |> Base.encode32()
+      |> Kernel.<>(extension)
+
+    Path.join(System.tmp_dir, file_name)
   end
 
   # Accepts a path
@@ -30,7 +36,7 @@ defmodule Arc.File do
   def ensure_path(file = %{binary: binary}) when is_binary(binary), do: write_binary(file)
 
   defp write_binary(file) do
-    path = temp_path()
+    path = generate_temporary_path(file)
     :ok = File.write!(path, file.binary)
 
     %__MODULE__{
