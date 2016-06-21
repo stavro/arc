@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.5.3 (2016-06-21)
+  * (Enhancement) Relax ex_aws dependency to allow `~> 0.5.0`
+
 ## v0.5.2 (2016-04-27)
   * (Enhancement) Allow returning a list of arguments for transformations to preserve desired groupings.
 
