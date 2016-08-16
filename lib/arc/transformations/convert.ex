@@ -27,7 +27,7 @@ defmodule Arc.Transformations.Convert do
   end
 
   defp temp_path() do
-    rand = Base.encode32(:crypto.rand_bytes(20))
+    rand = Base.encode32(:crypto.strong_rand_bytes(20))
     Path.join(System.tmp_dir, rand)
   end
 end
