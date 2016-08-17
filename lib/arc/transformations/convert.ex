@@ -6,10 +6,12 @@ defmodule Arc.Transformations.Convert do
 
     ensure_executable_exists!(program)
 
-    System.cmd(program, args_list(args), stderr_to_stdout: true)
-      |> handle_exit_code!
-
-    %Arc.File{file | path: new_path}
+    case System.cmd(program, args_list(args), stderr_to_stdout: true) do
+      {_, 0} ->
+        %Arc.File{file | path: new_path}
+      {error_message, _exit_code} ->
+        {:error, error_message}
+    end
   end
 
   defp args_list(args) when is_list(args), do: args
@@ -19,11 +21,6 @@ defmodule Arc.Transformations.Convert do
     unless System.find_executable(program) do
       raise Arc.MissingExecutableError, message: program
     end
-  end
-
-  defp handle_exit_code!({_, 0}), do: :ok
-  defp handle_exit_code!({error_message, exit_code}) do
-    raise Arc.ConvertError, message: error_message, exit_code: exit_code
   end
 
   defp temp_path() do

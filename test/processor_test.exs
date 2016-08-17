@@ -58,10 +58,8 @@ defmodule ArcTest.Processor do
     cleanup(new_file.path)
   end
 
-  test "raises an error in an invalid transformation" do
-    assert_raise Arc.ConvertError, ~r"unrecognized option", fn ->
-      Arc.Processor.process(BrokenDefinition, :thumb, {Arc.File.new(@img), nil})
-    end
+  test "returns tuple in an invalid transformation" do
+    assert {:error, _} = Arc.Processor.process(BrokenDefinition, :thumb, {Arc.File.new(@img), nil})
   end
 
   test "raises an error if the given transformation executable cannot be found" do
