@@ -284,16 +284,20 @@ end
 
 While storing files on S3 (rather than your harddrive) eliminates some malicious attack vectors, it is strongly encouraged to validate the extensions of uploaded files as well.
 
-Arc delegates validation to a `validate/1` function with a tuple of the file and scope.  As an example, to validate that an uploaded file conforms to popular image formats, you may use:
+Arc delegates validation to a `validate/1` function with a tuple of the file and scope. The function needs to return a tuple of two atoms `{:ok, :valid}` or `{:error, :reason}`. As an example, to validate that an uploaded file conforms to popular image formats, you may use:
 
 ```elixir
 defmodule Avatar do
   use Arc.Definition
   @extension_whitelist ~w(.jpg .jpeg .gif .png)
 
-  def validate({file, _}) do   
+  def validate({file, _}) do
     file_extension = file.file_name |> Path.extname |> String.downcase
-    Enum.member?(@extension_whitelist, file_extension)
+    if Enum.member?(@extension_whitelist, file_extension) do
+      {:ok, :valid_extension}
+    else
+      {:error, :invalid_extension}
+    end
   end
 end
 ```
@@ -431,7 +435,7 @@ defmodule Avatar do
 
   def acl(:thumb, _), do: :public_read
 
-  def validate({file, _}) do   
+  def validate({file, _}) do
     file_extension = file.file_name |> Path.extname |> String.downcase
     Enum.member?(@extension_whitelist, file_extension)
   end
