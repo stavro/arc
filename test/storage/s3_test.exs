@@ -94,7 +94,7 @@ defmodule ArcTest.Storage.S3 do
     Application.ensure_all_started(:httpoison)
     Application.ensure_all_started(:ex_aws)
     Application.put_env :arc, :virtual_host, false
-    Application.put_env :arc, :bucket, env_bucket
+    Application.put_env :arc, :bucket, { :system, "ARC_TEST_BUCKET" }
     # Application.put_env :ex_aws, :s3, [scheme: "https://", host: "s3.amazonaws.com", region: "us-west-2"]
     Application.put_env :ex_aws, :access_key_id, System.get_env("ARC_TEST_S3_KEY")
     Application.put_env :ex_aws, :secret_access_key,  System.get_env("ARC_TEST_S3_SECRET")

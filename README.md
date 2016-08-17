@@ -206,6 +206,13 @@ config :arc,
   bucket: "uploads"
 ```
 
+You may also set the bucket from an environment variable:
+
+```elixir
+config :arc,
+  bucket: {:system, "S3_BUCKET"}
+```
+
 In addition, ExAws must be configured with the appropriate Amazon S3 credentials.
 
 ExAws has by default the following configuration (which you may override if you wish):
