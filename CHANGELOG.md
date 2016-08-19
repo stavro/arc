@@ -1,6 +1,8 @@
 # Changelog
 
-## Pre-released (Will be v0.6.0)
+## v0.6.0-rc1 (2016-10-04)
+  * (Dependencies) - Removed `httpoison` as an optional dependency, added `sweet_xml` and `hackney` as optional dependencies (required if using S3).
+  * (Enhancement) File streaming to S3 - Allows the uploading of large files to S3 without reading to memory first.
   * (Enhancement) Allow Arc to transform and store directly on binary input.
   * (Bugfix - backwards incompatible) Return error tuple rather than raising `Arc.ConvertError` if the transformation fails.
   * (Bugfix) Update `:crypto` usage to `:crypto.strong_rand_bytes`

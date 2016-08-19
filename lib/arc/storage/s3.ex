@@ -1,4 +1,5 @@
 defmodule Arc.Storage.S3 do
+  require Logger
   @default_expiry_time 60*5
 
   def put(definition, version, {file, scope}) do
@@ -10,10 +11,7 @@ defmodule Arc.Storage.S3 do
       definition.s3_object_headers(version, {file, scope})
       |> Dict.put(:acl, acl)
 
-    case ExAws.S3.put_object(bucket, s3_key, extract_binary(file), s3_options) do
-      {:ok, _res}     -> {:ok, file.file_name}
-      {:error, error} -> {:error, error}
-    end
+    do_put(file, s3_key, s3_options)
   end
 
   def url(definition, version, file_and_scope, options \\ []) do
@@ -24,7 +22,9 @@ defmodule Arc.Storage.S3 do
   end
 
   def delete(definition, version, {file, scope}) do
-    ExAws.S3.delete_object bucket, s3_key(definition, version, {file, scope})
+    bucket
+    |> ExAws.S3.delete_object(s3_key(definition, version, {file, scope}))
+    |> ExAws.request()
 
     :ok
   end
@@ -33,13 +33,45 @@ defmodule Arc.Storage.S3 do
   # Private
   #
 
+  # If the file is stored as a binary in-memory, send to AWS in a single request
+  defp do_put(file=%Arc.File{binary: file_binary}, s3_key, s3_options) when is_binary(file_binary) do
+    ExAws.S3.put_object(bucket(), s3_key, file_binary, s3_options)
+    |> ExAws.request()
+    |> case do
+      {:ok, _res}     -> {:ok, file.file_name}
+      {:error, error} -> {:error, error}
+    end
+  end
+
+  # Stream the file and upload to AWS as a multi-part upload
+  defp do_put(file, s3_key, s3_options) do
+
+    try do
+      file.path
+      |> ExAws.S3.Upload.stream_file()
+      |> ExAws.S3.upload(bucket(), s3_key, s3_options)
+      |> ExAws.request()
+      |> case do
+        # :done -> {:ok, file.file_name}
+        {:ok, :done} -> {:ok, file.file_name}
+        {:error, error} -> {:error, error}
+      end
+    rescue
+      e in ExAws.Error ->
+        Logger.error(inspect e)
+        Logger.error(e.message)
+        {:error, :invalid_bucket}
+    end
+  end
+
   defp build_url(definition, version, file_and_scope, _options) do
     Path.join host, s3_key(definition, version, file_and_scope)
   end
 
   defp build_signed_url(definition, version, file_and_scope, options) do
     expires_in = Keyword.get(options, :expire_in, @default_expiry_time)
-    {:ok, url} = ExAws.S3.presigned_url(:get, bucket, s3_key(definition, version, file_and_scope), [expires_in: expires_in, virtual_host: virtual_host])
+    config = ExAws.Config.new(:s3, Application.get_all_env(:ex_aws))
+    {:ok, url} = ExAws.S3.presigned_url(config, :get, bucket, s3_key(definition, version, file_and_scope), [expires_in: expires_in, virtual_host: virtual_host])
     url
   end
 
@@ -72,9 +104,5 @@ defmodule Arc.Storage.S3 do
       {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
       name -> name
     end
-  end
-
-  defp extract_binary(file) do
-    file.binary || File.read!(file.path)
   end
 end
