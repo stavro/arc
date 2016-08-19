@@ -163,7 +163,51 @@ Common transformations of uploaded videos can be also defined through your defin
 {:ffmpeg, fn(input, output) -> "-i #{input} -f gif #{output}" end, :gif}
 ```
 
-### Asynchronous File Uploading
+### Complex Transformations
+`Arc` requires the output of your transformation to be located at a predetermined path.  However, the transformation may be done completely outside of `Arc`. For fine-grained transformations, you should create an executable wrapper in your $PATH (eg. bash script) which takes these proper arguments, runs your transformation, and then moves the file into the correct location.
+
+For example, to use `soffice` to convert a doc to an html file, you should place the following bash script in your $PATH:
+
+```bash
+#!/usr/bin/env sh
+
+# `soffice` doesn't allow for output file path option, and arc can't find the
+# temporary file to process and copy. This script has a similar argument list as
+# what arc expects. See https://github.com/stavro/arc/issues/77.
+
+set -e
+set -o pipefail
+
+function convert {
+    soffice \
+        --headless \
+        --convert-to html \
+        --outdir $TMPDIR \
+        $1
+}
+
+function filter_new_file_name {
+    awk -F$TMPDIR '{print $2}' \
+    | awk -F" " '{print $1}' \
+    | awk -F/ '{print $2}'
+}
+
+converted_file_name=$(convert $1 | filter_new_file_name)
+
+cp $TMPDIR/$converted_file_name $2
+rm $TMPDIR/$converted_file_name
+```
+
+And perform the transformation as such:
+
+
+```elixir
+def transform(:html, _) do
+  {:soffice_wrapper, fn(input, output) -> [input, output] end, :html}
+end
+```
+
+## Asynchronous File Uploading
 
 If you specify multiple versions in your definition module, each version is processed and stored concurrently as independent Tasks.  To prevent an overconsumption of system resources, each Task is given a specified timeout to wait, after which the process will fail.  By default this is `15 seconds`.
 
