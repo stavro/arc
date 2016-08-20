@@ -452,6 +452,13 @@ config :arc,
   asset_host: "https://d3gav2egqolk5.cloudfront.net"
 ```
 
+You may also set the asset host from an environment variable:
+
+```elixir
+config :arc,
+  asset_host: {:system, "ASSET_HOST"}
+```
+
 ### Alternate S3 configuration example
 If you are using a region other than US-Standard, it is necessary to specify the correct configuration for `ex_aws`.  A full example configuration for both arc and ex_aws is as follows:
 

@@ -50,7 +50,12 @@ defmodule Arc.Storage.S3 do
   end
 
   defp host do
-    Application.get_env(:arc, :asset_host) || default_host
+    host_url = Application.get_env(:arc, :asset_host, default_host)
+
+    case host_url do
+      {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
+      url -> url
+    end
   end
 
   defp default_host do
