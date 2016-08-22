@@ -51,9 +51,13 @@ defmodule Arc.Actions.Store do
   end
 
   defp put_version(definition, version, {file, scope}) do
-    file      = Arc.Processor.process(definition, version, {file, scope})
-    file_name = Arc.Definition.Versioning.resolve_file_name(definition, version, {file, scope})
-    file      = %Arc.File{file | file_name: file_name}
-    definition.__storage.put(definition, version, {file, scope})
+    case Arc.Processor.process(definition, version, {file, scope}) do
+      {:error, error_message} ->
+        {:error, error_message}
+      file -> file
+        file_name = Arc.Definition.Versioning.resolve_file_name(definition, version, {file, scope})
+        file      = %Arc.File{file | file_name: file_name}
+        definition.__storage.put(definition, version, {file, scope})
+    end
   end
 end
