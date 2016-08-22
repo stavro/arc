@@ -1,10 +1,11 @@
 defmodule Arc.Processor do
   def process(definition, version, {file, scope}) do
-    apply_transformation file, definition.transform(version, {file, scope})
+    transform = definition.transform(version, {file, scope})
+    apply_transformation(file, transform)
   end
 
-  defp apply_transformation(file, :noaction), do: file
-  defp apply_transformation(file, {:noaction}), do: file # Deprecated
+  defp apply_transformation(file, :noaction), do: {:ok, file}
+  defp apply_transformation(file, {:noaction}), do: {:ok, file} # Deprecated
   defp apply_transformation(file, {cmd, conversion, _}) do
     apply_transformation(file,{cmd, conversion})
   end
