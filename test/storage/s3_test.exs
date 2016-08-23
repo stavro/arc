@@ -1,5 +1,7 @@
 defmodule ArcTest.Storage.S3 do
   use ExUnit.Case, async: false
+  use TemporaryEnv
+
   @img "test/support/image.png"
 
   defmodule DummyDefinition do
@@ -103,11 +105,28 @@ defmodule ArcTest.Storage.S3 do
   @tag :s3
   @tag timeout: 15000
   test "virtual_host" do
-    Application.put_env :arc, :virtual_host, true
-    assert "https://#{env_bucket}.s3.amazonaws.com/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    TemporaryEnv.set :arc, virtual_host: true do
+      assert "https://#{env_bucket}.s3.amazonaws.com/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    end
 
-    Application.put_env :arc, :virtual_host, false
-    assert "https://s3.amazonaws.com/#{env_bucket}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    TemporaryEnv.set :arc, virtual_host: false do
+      assert "https://s3.amazonaws.com/#{env_bucket}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    end
+  end
+
+  @tag :s3
+  @tag timeout: 15000
+  test "custom asset_host" do
+    url = "https://some.cloudfront.com"
+
+    TemporaryEnv.set :arc, asset_host: url do
+      assert "#{url}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    end
+
+    TemporaryEnv.set :arc, asset_host: {:system, "ARC_ASSET_HOST"} do
+      System.put_env "ARC_ASSET_HOST", url
+      assert "#{url}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    end
   end
 
   @tag :s3
