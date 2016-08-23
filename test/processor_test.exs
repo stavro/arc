@@ -31,11 +31,12 @@ defmodule ArcTest.Processor do
   end
 
   test "returns the original path for :noaction transformations" do
-    assert Arc.Processor.process(DummyDefinition, :original, {Arc.File.new(@img), nil}).path == @img
+    {:ok, file} = Arc.Processor.process(DummyDefinition, :original, {Arc.File.new(@img), nil})
+    assert file.path == @img
   end
 
   test "transforms a copied version of file according to the specified transformation" do
-    new_file = Arc.Processor.process(DummyDefinition, :thumb, {Arc.File.new(@img), nil})
+    {:ok, new_file} = Arc.Processor.process(DummyDefinition, :thumb, {Arc.File.new(@img), nil})
     assert new_file.path != @img
     assert "128x128" == geometry(@img) #original file untouched
     assert "10x10" == geometry(new_file.path)
@@ -43,7 +44,7 @@ defmodule ArcTest.Processor do
   end
 
   test "transforms a copied version of file according to a function transformation that returns a string" do
-    new_file = Arc.Processor.process(DummyDefinition, :med, {Arc.File.new(@img), nil})
+    {:ok, new_file} = Arc.Processor.process(DummyDefinition, :med, {Arc.File.new(@img), nil})
     assert new_file.path != @img
     assert "128x128" == geometry(@img) #original file untouched
     assert "10x10" == geometry(new_file.path)
@@ -51,7 +52,7 @@ defmodule ArcTest.Processor do
   end
 
   test "transforms a copied version of file according to a function transformation that returns a list" do
-    new_file = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(@img), nil})
+    {:ok, new_file} = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(@img), nil})
     assert new_file.path != @img
     assert "128x128" == geometry(@img) #original file untouched
     assert "10x10" == geometry(new_file.path)
