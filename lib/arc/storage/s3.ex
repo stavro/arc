@@ -4,14 +4,13 @@ defmodule Arc.Storage.S3 do
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
     s3_key = Path.join(destination_dir, file.file_name)
-    binary = File.read!(file.path)
     acl = definition.acl(version, {file, scope})
 
     s3_options =
       definition.s3_object_headers(version, {file, scope})
       |> Dict.put(:acl, acl)
 
-    case ExAws.S3.put_object(bucket, s3_key, binary, s3_options) do
+    case ExAws.S3.put_object(bucket, s3_key, extract_binary(file), s3_options) do
       {:ok, _res}     -> {:ok, file.file_name}
       {:error, error} -> {:error, error}
     end
@@ -71,5 +70,9 @@ defmodule Arc.Storage.S3 do
       {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
       name -> name
     end
+  end
+
+  defp extract_binary(file) do
+    file.binary || File.read!(file.path)
   end
 end
