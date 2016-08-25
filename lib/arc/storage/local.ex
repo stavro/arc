@@ -2,10 +2,10 @@ defmodule Arc.Storage.Local do
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
     path = Path.join(destination_dir, file.file_name)
-    path |> Path.dirname() |> File.mkdir_p()
+    path |> Path.dirname() |> File.mkdir_p!()
     binary = extract_binary(file)
     if file.binary do
-      File.write!(Path.join(destination_dir, file.file_name), binary)
+      File.write!(path, binary)
     else
       File.copy!(file.path, path)
     end
