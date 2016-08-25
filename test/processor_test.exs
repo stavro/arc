@@ -59,6 +59,15 @@ defmodule ArcTest.Processor do
     cleanup(new_file.path)
   end
 
+  test "transforms a file given as a binary" do
+    img_binary = File.read!(@img)
+    {:ok, new_file} = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(%{binary: img_binary, filename: "image.png"}), nil})
+    assert new_file.path != @img
+    assert "128x128" == geometry(@img) #original file untouched
+    assert "10x10" == geometry(new_file.path)
+    cleanup(new_file.path)
+  end
+
   test "returns tuple in an invalid transformation" do
     assert {:error, _} = Arc.Processor.process(BrokenDefinition, :thumb, {Arc.File.new(@img), nil})
   end

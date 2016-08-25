@@ -81,6 +81,7 @@ The upload definition file responds to `Avatar.store/1` which accepts either:
 
   * A path to a file
   * A map with a filename and path keys (eg, a `%Plug.Upload{}`)
+  * A map with a filename and binary keys (eg, `%{filename: "image.png", binary: <<255,255,255,...>>}`)
   * A two-tuple consisting of one of the above file formats as well as a scope object.
 
 Example usage as general file store:
@@ -91,13 +92,16 @@ Avatar.store("/path/to/my/file.png") #=> {:ok, "file.png"}
 
 # Store a file directly from a `%Plug.Upload{}`
 Avatar.store(%Plug.Upload{filename: "file.png", path: "/a/b/c"}) #=> {:ok, "file.png"}
+
+# Store a file from a connection body
+{:ok, data, _conn} = Plug.Conn.read_body(conn)
+Avatar.store(%{filename: "file.png", binary: data})
 ```
 
 Example usage as a file attached to a `scope`:
 
 ```elixir
 scope = Repo.get(User, 1)
-
 Avatar.store({%Plug.Upload{}, scope}) #=> {:ok, "file.png"}
 ```
 
@@ -345,7 +349,7 @@ defmodule Avatar do
   @extension_whitelist ~w(.jpg .jpeg .gif .png)
 
   def validate({file, _}) do   
-    file_extension = file.file_name |> Path.extname |> String.downcase
+    file_extension = file.file_name |> Path.extname() |> String.downcase()
     Enum.member?(@extension_whitelist, file_extension)
   end
 end
