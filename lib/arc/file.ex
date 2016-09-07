@@ -20,6 +20,12 @@ defmodule Arc.File do
     end
   end
 
+  # Accepts a data in base64
+  def new(%{filename: filename, base64: base64}) do
+    {:ok, binary} = Base.decode64(base64)
+    new(%{filename: filename, binary: binary})
+  end
+
   def new(%{filename: filename, binary: binary}) do
     %Arc.File{ binary: binary, file_name: Path.basename(filename) }
   end

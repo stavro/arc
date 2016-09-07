@@ -45,4 +45,9 @@ defmodule ArcTest.Storage.Local do
     Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{binary: "binary", filename: "binary.png"}), nil})
     assert true == File.exists?("arctest/uploads/binary.png")
   end
+
+  test "accept base64, convert to binary and save" do
+    Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{base64: Base.encode64("binary"), filename: "binary.png"}), nil})
+    assert true == File.exists?("arctest/uploads/binary.png")
+  end
 end
