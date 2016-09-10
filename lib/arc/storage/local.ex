@@ -8,7 +8,7 @@ defmodule Arc.Storage.Local do
   end
 
   def url(definition, version, file_and_scope, _options \\ []) do
-    build_local_path(definition, version, file_and_scope)
+    "/" <> build_local_path(definition, version, file_and_scope)
   end
 
   def delete(definition, version, file_and_scope) do
