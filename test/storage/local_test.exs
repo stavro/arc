@@ -32,11 +32,11 @@ defmodule ArcTest.Storage.Local do
 
     assert File.exists?("arctest/uploads/original-image.png")
     assert File.exists?("arctest/uploads/1/thumb-image.png")
-    assert "arctest/uploads/original-image.png" == DummyDefinition.url("image.png", :original)
-    assert "arctest/uploads/1/thumb-image.png" == DummyDefinition.url("1/image.png", :thumb)
+    assert "/arctest/uploads/original-image.png" == DummyDefinition.url("image.png", :original)
+    assert "/arctest/uploads/1/thumb-image.png" == DummyDefinition.url("1/image.png", :thumb)
 
-    Arc.Storage.Local.delete(DummyDefinition, :original, {%{file_name: "image.png"}, nil})
-    Arc.Storage.Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
+    :ok = Arc.Storage.Local.delete(DummyDefinition, :original, {%{file_name: "image.png"}, nil})
+    :ok = Arc.Storage.Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
     refute File.exists?("arctest/uploads/original-image.png")
     refute File.exists?("arctest/uploads/1/thumb-image.png")
   end

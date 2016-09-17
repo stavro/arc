@@ -6,6 +6,7 @@
   * (Bugfix) Update `:crypto` usage to `:crypto.strong_rand_bytes`
   * (Enhancement) Optionally set S3 bucket from runtime env var  (`config :arc, bucket: {:system, "S3_BUCKET"}`)
   * (Enhancement) Temporary files created during transformations now include the file extension.
+  * (Bugfix) Add a leading slash to **urls** generated from the Local storage adapter.
 
 ## v0.5.3 (2016-06-21)
   * (Enhancement) Relax ex_aws dependency to allow `~> 0.5.0`

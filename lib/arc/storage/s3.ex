@@ -25,6 +25,8 @@ defmodule Arc.Storage.S3 do
 
   def delete(definition, version, {file, scope}) do
     ExAws.S3.delete_object bucket, s3_key(definition, version, {file, scope})
+
+    :ok
   end
 
   #
