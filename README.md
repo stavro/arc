@@ -401,19 +401,22 @@ Saving your files is only the first half of any decent storage solution.  Straig
 Often times you will want to regain access to the stored files.  As such, `Arc` facilitates the generation of urls.
 
 ```elixir
-user = Repo.get(User, 1)
+# Given some user record
+user = %{id: 1}
+
+Avatar.store({%Plug.Upload{}, user}) #=> {:ok, "selfie.png"}
 
 # To generate a regular, unsigned url (defaults to the first version):
-Avatar.url({user.avatar, user}) #=> "https://bucket.s3.amazonaws.com/uploads/1/original.png"
+Avatar.url({"selfie.png", user}) #=> "https://bucket.s3.amazonaws.com/uploads/1/original.png"
 
 # To specify the version of the upload:
-Avatar.url({user.avatar, user}, :thumb) #=> "https://bucket.s3.amazonaws.com/uploads/1/thumb.png"
+Avatar.url({"selfie.png", user}, :thumb) #=> "https://bucket.s3.amazonaws.com/uploads/1/thumb.png"
 
 # To generate a signed url:
-Avatar.url({user.avatar, user}, :thumb, signed: true) #=> "https://bucket.s3.amazonaws.com/uploads/1/thumb.png?AWSAccessKeyId=AKAAIPDF14AAX7XQ&Signature=5PzIbSgD1V2vPLj%2B4WLRSFQ5M%3D&Expires=1434395458"
+Avatar.url({"selfie.png", user}, :thumb, signed: true) #=> "https://bucket.s3.amazonaws.com/uploads/1/thumb.png?AWSAccessKeyId=AKAAIPDF14AAX7XQ&Signature=5PzIbSgD1V2vPLj%2B4WLRSFQ5M%3D&Expires=1434395458"
 
 # To generate urls for all versions:
-Avatar.urls({user.avatar, user}) #=> %{original: "https://.../original.png", thumb: "https://.../thumb.png"}
+Avatar.urls({"selfie.png", user}) #=> %{original: "https://.../original.png", thumb: "https://.../thumb.png"}
 ```
 
 **Default url**
