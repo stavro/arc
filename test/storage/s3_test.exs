@@ -98,6 +98,8 @@ defmodule ArcTest.Storage.S3 do
     # Application.put_env :ex_aws, :s3, [scheme: "https://", host: "s3.amazonaws.com", region: "us-west-2"]
     Application.put_env :ex_aws, :access_key_id, System.get_env("ARC_TEST_S3_KEY")
     Application.put_env :ex_aws, :secret_access_key,  System.get_env("ARC_TEST_S3_SECRET")
+    # Application.put_env :ex_aws, :region, "us-east-1"
+    # Application.put_env :ex_aws, :scheme, "https://"
   end
 
   @tag :s3

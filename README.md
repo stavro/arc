@@ -9,20 +9,26 @@ Browse the readme below, or jump to [a full example](#full-example).
 
 ## Installation
 
-Add the latest stable release to your `mix.exs` file:
+Add the latest stable release to your `mix.exs` file, along with the required dependencies for `ExAws` if appropriate:
 
 ```elixir
 defp deps do
   [
-    arc: "~> 0.5.2",
-    ex_aws: "~> 0.4.10", # Required if using Amazon S3
-    httpoison: "~> 0.7", # Required if using Amazon S3
-    poison: "~> 1.2"     # Required if using Amazon S3
+    arc: "~> 0.6.0-rc1",
+
+    # If using Amazon S3:
+    ex_aws: "~> 1.0.0-rc1",
+
+    # Per the ExAws requirements:
+    httpoison: "~> 0.7",
+    hackney: "~> 1.5", # Use Hackeny OR Poison - whichever you prefer
+    poison: "~> 2.0", # Use Hackeny OR Poison - whichever you prefer
+    sweet_xml: "~> 0.5"
   ]
 end
 ```
 
-If you plan on using Amazon's S3 Storage, you must also add `ex_aws` and `httpoison` the following applications as startup dependencies your application's `mix.exs` file:
+If you plan on using Amazon's S3 Storage, you must also add `ex_aws`, `hackney`, and `poison` as startup dependencies your application's `mix.exs` file:
 
 ```elixir
 def application do
@@ -30,7 +36,8 @@ def application do
     mod: { MyApp, [] },
     applications: [
       :ex_aws,
-      :httpoison
+      :hackney,
+      :poison
     ]
   ]
 end

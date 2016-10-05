@@ -1,7 +1,7 @@
 defmodule Arc.Mixfile do
   use Mix.Project
 
-  @version "0.5.3"
+  @version "0.6.0-rc1"
 
   def project do
     [app: :arc,
@@ -28,15 +28,25 @@ defmodule Arc.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [
+      applications: [
+        :logger
+      ] ++ applications(Mix.env)
+    ]
   end
+
+  def applications(:test), do: [:ex_aws, :poison, :hackney]
+  def applications(_), do: []
 
   defp deps do
     [
-      {:ex_aws,    "~> 0.4.10 or ~> 0.5.0", optional: true},
-      {:poison,    "~> 1.2 or ~> 2.0",    optional: true},
-      {:httpoison, "~> 0.7",    optional: true},
-      {:mock,      "~> 0.1.1",  only: :test}
+      {:ex_aws, "~> 1.0.0-rc.1", optional: true},
+      {:mock, "~> 0.1.1", only: :test},
+
+      # If using Amazon S3:
+      {:hackney, "~> 1.5", optional: true},
+      {:poison, "~> 2.0", optional: true},
+      {:sweet_xml, "~> 0.5", optional: true}
     ]
   end
 end
