@@ -18,11 +18,8 @@ defp deps do
 
     # If using Amazon S3:
     ex_aws: "~> 1.0.0-rc1",
-
-    # Per the ExAws requirements:
-    httpoison: "~> 0.7",
-    hackney: "~> 1.5", # Use Hackeny OR Poison - whichever you prefer
-    poison: "~> 2.0", # Use Hackeny OR Poison - whichever you prefer
+    hackney: "~> 1.5",
+    poison: "~> 2.0",
     sweet_xml: "~> 0.5"
   ]
 end
