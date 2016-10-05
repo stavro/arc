@@ -42,6 +42,7 @@ defmodule Arc.Mixfile do
     [
       {:ex_aws, "~> 1.0.0-rc.1", optional: true},
       {:mock, "~> 0.1.1", only: :test},
+      {:ex_doc, "~> 0.14", only: :dev},
 
       # If using Amazon S3:
       {:hackney, "~> 1.5", optional: true},
