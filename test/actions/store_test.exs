@@ -61,4 +61,12 @@ defmodule ArcTest.Actions.Store do
 
     Application.put_env :arc, :version_timeout, 15_000
   end
+
+  test "capture data during store" do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> {:ok, "resp"} end] do
+      assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}, [], fn({_okerr, _result, version, _file}, acc) ->
+        [version | acc]
+      end) == {:ok, "image.png", [:thumb, :original]}
+    end
+  end
 end
