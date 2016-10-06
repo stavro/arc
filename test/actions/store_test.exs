@@ -12,6 +12,15 @@ defmodule ArcTest.Actions.Store do
     def __versions, do: [:original, :thumb]
   end
 
+  defmodule TransformingDefinition do
+    use Arc.Actions.Store
+    use Arc.Definition.Storage
+
+    def validate({file, _}), do: String.ends_with?(file.file_name, ".png")
+    def transform(_, _), do: {:cp, ""}
+    def __versions, do: [:original, :thumb]
+  end
+
   test "checks file existance" do
     assert DummyDefinition.store("non-existant-file.png") == {:error, :invalid_file}
   end
@@ -67,6 +76,19 @@ defmodule ArcTest.Actions.Store do
       assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}, [], fn({_okerr, _result, version, _file}, acc) ->
         [version | acc]
       end) == {:ok, "image.png", [:thumb, :original]}
+    end
+  end
+
+  test "cleanup" do
+    Agent.start_link(fn -> [] end, name: :arc_cleanup)
+    with_mock Arc.Storage.S3, [put: fn(TransformingDefinition, _, {%{file_name: "image.png", path: temp_path}, :scope}) ->
+                                Agent.update(:arc_cleanup, &([temp_path | &1]))
+                                {:ok, "resp"}
+                              end] do
+      assert TransformingDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:ok, "image.png"}
+      temp_paths = Agent.get(:arc_cleanup, &(&1))
+      for temp_path <- temp_paths,
+        do: refute File.exists?(temp_path), "temp file #{temp_path} should have been deleted"
     end
   end
 end

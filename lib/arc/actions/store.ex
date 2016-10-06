@@ -35,14 +35,25 @@ defmodule Arc.Actions.Store do
     |> handle_responses(file.file_name, initial, reducer)
   end
 
-  defp handle_responses(responses, filename, nil, _reducer) do
+  defp handle_responses(responses, filename, inital, reducer) do
     errors = Enum.filter(responses, fn(resp) -> elem(resp, 0) == :error end) |> Enum.map(fn(err) -> elem(err, 1) end)
-    if Enum.empty?(errors), do: {:ok, filename}, else: {:error, errors}
+    result = if Enum.empty?(errors), do: {:ok, filename}, else: {:error, errors}
+    result = apply_reducer(result, responses, inital, reducer)
+    cleanup_temp_files(responses)
+    result
   end
-  defp handle_responses(responses, filename, initial, reducer) do
-    result = handle_responses(responses, filename, nil, nil)
+
+  defp apply_reducer(result, responses, nil, _reducer),
+    do: result
+  defp apply_reducer(result, responses, initial, reducer) do
     reduce_result = Enum.reduce(responses, initial, reducer)
     Tuple.append(result, reduce_result)
+  end
+
+  defp cleanup_temp_files(responses) do
+    Enum.each(responses, fn({_, _, _, file}) ->
+      Enum.each(file.temp_paths, fn(path) -> File.rm(path) end)
+    end)
   end
 
   defp version_timeout do
