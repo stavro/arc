@@ -14,10 +14,10 @@ Add the latest stable release to your `mix.exs` file, along with the required de
 ```elixir
 defp deps do
   [
-    arc: "~> 0.6.0-rc2",
+    arc: "~> 0.6.0-rc3",
 
     # If using Amazon S3:
-    ex_aws: "~> 1.0.0-rc2",
+    ex_aws: "~> 1.0.0-rc3",
     hackney: "~> 1.5",
     poison: "~> 2.0",
     sweet_xml: "~> 0.5"
