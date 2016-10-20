@@ -1,8 +1,8 @@
 %{"certifi": {:hex, :certifi, "0.4.0", "a7966efb868b179023618d29a407548f70c52466bf1849b9e8ebd0e34b7ea11f", [:rebar3], []},
   "earmark": {:hex, :earmark, "1.0.1", "2c2cd903bfdc3de3f189bd9a8d4569a075b88a8981ded9a0d95672f6e2b63141", [:mix], []},
-  "ex_aws": {:hex, :ex_aws, "1.0.0-rc.1", "1fc21b65686892fe24ea0ff699e347c30ab538f69f9ed15b6cb488cc6e1900d9", [:mix], [{:gen_stage, "~> 0.5.0", [hex: :gen_stage, optional: false]}, {:hackney, "~> 1.5", [hex: :hackney, optional: true]}, {:jsx, "~> 2.8", [hex: :jsx, optional: true]}, {:poison, "~> 1.2 or ~> 2.0", [hex: :poison, optional: true]}, {:sweet_xml, "~> 0.5", [hex: :sweet_xml, optional: true]}]},
+  "ex_aws": {:hex, :ex_aws, "1.0.0-rc.3", "4d91ffb5831c62cbcb2ee3881abaa63cfe8394c414406caffec2e3ab5280a56a", [:mix], [{:gen_stage, "~> 0.6.0", [hex: :gen_stage, optional: false]}, {:hackney, "~> 1.5", [hex: :hackney, optional: true]}, {:jsx, "~> 2.8", [hex: :jsx, optional: true]}, {:poison, "~> 1.2 or ~> 2.0", [hex: :poison, optional: true]}, {:sweet_xml, "~> 0.5", [hex: :sweet_xml, optional: true]}]},
   "ex_doc": {:hex, :ex_doc, "0.14.1", "bfed8d4e93c755e2b150be925ad2cfa6af7c3bfcacc3b609f45f6048c9d623d6", [:mix], [{:earmark, "~> 1.0", [hex: :earmark, optional: false]}]},
-  "gen_stage": {:hex, :gen_stage, "0.5.0", "758068f3a81286e342a609d668e9624714c2e4d43cc26699ead04d1680fde6c6", [:mix], []},
+  "gen_stage": {:hex, :gen_stage, "0.6.1", "1e05e3faf9e505dcdb1e6d2da501fc5d1724e7ea6176bf72853ea78c8a600d1c", [:mix], []},
   "hackney": {:hex, :hackney, "1.6.1", "ddd22d42db2b50e6a155439c8811b8f6df61a4395de10509714ad2751c6da817", [:rebar3], [{:certifi, "0.4.0", [hex: :certifi, optional: false]}, {:idna, "1.2.0", [hex: :idna, optional: false]}, {:metrics, "1.0.1", [hex: :metrics, optional: false]}, {:mimerl, "1.0.2", [hex: :mimerl, optional: false]}, {:ssl_verify_fun, "1.1.0", [hex: :ssl_verify_fun, optional: false]}]},
   "httpoison": {:hex, :httpoison, "0.9.1", "6c2b4eaf2588a6f3ef29663d28c992531ca3f0bc832a97e0359bc822978e1c5d", [:mix], [{:hackney, "~> 1.6.0", [hex: :hackney, optional: false]}]},
   "idna": {:hex, :idna, "1.2.0", "ac62ee99da068f43c50dc69acf700e03a62a348360126260e87f2b54eced86b2", [:rebar3], []},
@@ -13,4 +13,4 @@
   "poison": {:hex, :poison, "2.2.0", "4763b69a8a77bd77d26f477d196428b741261a761257ff1cf92753a0d4d24a63", [:mix], []},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.0", "edee20847c42e379bf91261db474ffbe373f8acb56e9079acb6038d4e0bf414f", [:rebar, :make], []},
   "ssl_verify_hostname": {:hex, :ssl_verify_hostname, "1.0.5"},
-  "sweet_xml": {:hex, :sweet_xml, "0.6.1", "a56f235171f35a32807ce44798dedc748ce249fca574674fecd29c1321cab0de", [:mix], []}}
+  "sweet_xml": {:hex, :sweet_xml, "0.6.2", "8f8aadd902dcc62fb85b7a308bb6a083874e97eb51ccddaf855d97c8ffad7d64", [:mix], []}}
