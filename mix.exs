@@ -1,7 +1,7 @@
 defmodule Arc.Mixfile do
   use Mix.Project
 
-  @version "0.6.0-rc1"
+  @version "0.6.0-rc2"
 
   def project do
     [app: :arc,
@@ -40,7 +40,7 @@ defmodule Arc.Mixfile do
 
   defp deps do
     [
-      {:ex_aws, "~> 1.0.0-rc.1", optional: true},
+      {:ex_aws, "~> 1.0.0-rc.2", optional: true},
       {:mock, "~> 0.1.1", only: :test},
       {:ex_doc, "~> 0.14", only: :dev},
 
