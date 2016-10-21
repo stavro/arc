@@ -1,7 +1,7 @@
 defmodule Arc.Transformations.Convert do
   def apply(cmd, file, args) do
     new_path = Arc.File.generate_temporary_path(file)
-    args     = if is_function(args), do: args.(file.path, new_path), else: "#{file.path} #{args} #{new_path}"
+    args     = if is_function(args), do: args.(file.path, new_path), else: [file.path | (String.split(args, " ") ++ [new_path])]
     program  = to_string(cmd)
 
     ensure_executable_exists!(program)
