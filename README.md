@@ -111,6 +111,22 @@ Avatar.store({%Plug.Upload{}, scope}) #=> {:ok, "file.png"}
 
 This scope will be available throughout the definition module to be used as an input to the storage parameters (eg, store files in `/uploads/#{scope.id}`).
 
+## Advanced
+
+Access the information of each processed version with a reducer function.
+
+```elixir
+# Example to calculate total size of stored files
+Avatar.store("/path/to/my-file.png", 0, fn(
+  {:ok, _result, _version, file}, acc) ->
+    stat = File.stat!(file.path)
+    acc + stat.size
+  {:err, _errmsg, _version, _file} ->
+    acc
+end)
+#=> {:ok, "my-file.png", 12345}
+```
+
 ## Transformations
 
 Arc can be used to facilitate transformations of uploaded files via any system executable.  Some common operations you may want to take on uploaded files include resizing an uploaded avatar with ImageMagick or extracting a still image from a video with FFmpeg.
@@ -352,7 +368,7 @@ defmodule Avatar do
   use Arc.Definition
   @extension_whitelist ~w(.jpg .jpeg .gif .png)
 
-  def validate({file, _}) do   
+  def validate({file, _}) do
     file_extension = file.file_name |> Path.extname() |> String.downcase()
     Enum.member?(@extension_whitelist, file_extension)
   end
@@ -495,7 +511,7 @@ defmodule Avatar do
 
   def acl(:thumb, _), do: :public_read
 
-  def validate({file, _}) do   
+  def validate({file, _}) do
     file_extension = file.file_name |> Path.extname |> String.downcase
     Enum.member?(@extension_whitelist, file_extension)
   end
