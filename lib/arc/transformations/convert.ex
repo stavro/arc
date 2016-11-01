@@ -8,7 +8,7 @@ defmodule Arc.Transformations.Convert do
 
     case System.cmd(program, args_list(args), stderr_to_stdout: true) do
       {_, 0} ->
-        {:ok, %Arc.File{file | path: new_path}}
+        {:ok, %Arc.File{file | path: new_path, temp_paths: [new_path | file.temp_paths]}}
       {error_message, _exit_code} ->
         {:error, error_message}
     end
