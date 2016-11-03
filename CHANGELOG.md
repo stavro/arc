@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+  * (Enhancement) Allow downloading and saving remote files
+  * (Enhancement) Move Arc storage module to config
+  * (Bugfix) S3 object headers must be transferred to ExAws as a keyword list, not a map
+  * (Bugfix) Don't prepend a forward-slash to local storage urls if the url already starts with a forward-slash.
+
+## v0.6.0-rc3 (2016-10-20)
+  * (Dependencies) - Upgrade `ex_aws` to rc3
+
+## v0.6.0-rc2 (2016-10-20)
+  * (Dependencies) - Upgrade `ex_aws` to rc2
+
 ## v0.6.0-rc1 (2016-10-04)
   * (Dependencies) - Removed `httpoison` as an optional dependency, added `sweet_xml` and `hackney` as optional dependencies (required if using S3).
   * (Enhancement) File streaming to S3 - Allows the uploading of large files to S3 without reading to memory first.
