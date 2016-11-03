@@ -9,6 +9,7 @@ defmodule Arc.Storage.S3 do
 
     s3_options =
       definition.s3_object_headers(version, {file, scope})
+      |> ensure_keyword_list()
       |> Dict.put(:acl, acl)
 
     do_put(file, s3_key, s3_options)
@@ -32,6 +33,9 @@ defmodule Arc.Storage.S3 do
   #
   # Private
   #
+
+  defp ensure_keyword_list(list) when is_list(list), do: list
+  defp ensure_keyword_list(map) when is_map(map), do: Map.to_list(map)
 
   # If the file is stored as a binary in-memory, send to AWS in a single request
   defp do_put(file=%Arc.File{binary: file_binary}, s3_key, s3_options) when is_binary(file_binary) do
