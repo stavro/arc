@@ -42,6 +42,18 @@ end
 
 Then run `mix deps.get` in your shell to fetch the dependencies.
 
+### Configuration
+
+Arc expects certain properties to be configured at the application level:
+
+```elixir
+config :arc,
+  storage: Arc.Storage.S3, # or Arc.Storage.Local
+  bucket: {:system, "AWS_S3_BUCKET"} # if using Amazon S3
+```
+
+Along with any configuration necessary for ExAws.
+
 ### Usage with Ecto
 
 Arc comes with a companion package for use with Ecto.  If you intend to use Arc with Ecto, it is highly recommended you also add the [`arc_ecto`](https://github.com/stavro/arc_ecto) dependency.  Benefits include:
