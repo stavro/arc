@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+  * (Enhancement) Allow asset host to be set via an environment variable
   * (Enhancement) Allow downloading and saving remote files
   * (Enhancement) Move Arc storage module to config
   * (Bugfix) S3 object headers must be transferred to ExAws as a keyword list, not a map
