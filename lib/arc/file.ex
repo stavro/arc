@@ -3,12 +3,7 @@ defmodule Arc.File do
 
   def generate_temporary_path(file \\ nil) do
     extension = Path.extname((file && file.path) || "")
-
-    file_name =
-      :crypto.rand_bytes(20)
-      |> Base.encode32()
-      |> Kernel.<>(extension)
-
+    file_name = Arc.UUID.generate() <> extension
     Path.join(System.tmp_dir, file_name)
   end
 

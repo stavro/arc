@@ -16,18 +16,81 @@ defmodule Arc.Storage.S3 do
   end
 
   def url(definition, version, file_and_scope, options \\ []) do
+    compose_s3_key(definition, version, file_and_scope)
+    |> url(options)
+  end
+
+  def url(s3_key, options \\ []) when is_binary(s3_key) do
     case Keyword.get(options, :signed, false) do
-      false -> build_url(definition, version, file_and_scope, options)
-      true  -> build_signed_url(definition, version, file_and_scope, options)
+      false -> build_url(s3_key, options)
+      true  -> build_signed_url(s3_key, options)
     end
   end
 
   def delete(definition, version, {file, scope}) do
-    bucket
-    |> ExAws.S3.delete_object(s3_key(definition, version, {file, scope}))
+    compose_s3_key(definition, version, {file, scope})
+    |> delete()
+  end
+
+  def delete(s3_key) when is_binary(s3_key) do
+    bucket()
+    |> ExAws.S3.delete_object(s3_key)
     |> ExAws.request()
 
     :ok
+  end
+
+  @doc """
+  Generates an upload form capable of submitting a file directly to Amazon S3.
+
+  ## Options
+
+    * `:bucket` - Which bucket the upload will be placed in. Defaults to the
+      Arc bucket.
+    * `:key` - The S3 key (or file path) where the upload will be stored,
+      defaults to `uploads/#{Arc.UUID.generate()}`
+    * `:acl` - The access control policy to apply to the uploaded file. If you
+      do not want the uploaded file to be made available to the general public,
+      you should use the value `private`.  To make the uploaded file publicly
+      available, use the value `public-read`. Defaults to `private`.
+    * `:expires_in` - A value in seconds that specifies how long the policy
+      document will be valid for. Once a policy document has expired, the
+      upload form will no longer work.
+    * `:content_length_range` - Content length range as `[min, max]`, where
+       S3 will check that the size of an uploaded file is between a given
+       minimum and maximum value (in bytes). If this rule is not included in a
+       policy document, users will be able to upload files of any size up to
+       the 5GB limit imposed by S3.
+    * `:content_disposition` - Content header passed through to Amazon S3.  This
+      allows you to specify that the file is an attachment, and what filename
+      the upload should be downloaded as.  Eg. `attachment; filename=image.png`
+    * `:content_type`- The content type (mime type) that will be applied to the
+      uploaded file, for example image/jpeg for JPEG picture files. If you do
+      not know what type of file a user will upload, you can either let the
+      user choose the file prior to generating this upload form to determine
+      the appropriate content type.  If you do not set the content type with
+      this field, S3 will use the default value application/octet-stream which
+      may prevent some web browsers from being able to display the file
+      properly.
+    * `:success_action_redirect` - The URL address to which the user’s web
+      browser will be redirected after the file is uploaded. This URL should
+      point to a “Successful Upload” page on your web site, so you can inform
+      your users that their files have been accepted. S3 will add bucket,
+      key and etag parameters to this URL value to inform your web application
+      of the location and hash value of the uploaded file.
+  """
+  def html_upload_form(options \\ []) do
+    ex_aws_config = ExAws.Config.new(:s3, Application.get_all_env(:ex_aws))
+
+    options = Keyword.merge([
+      ex_aws_config: ex_aws_config,
+      key: "uploads/#{Arc.UUID.generate()}",
+      acl: "private",
+      expires_in: 3600,
+      bucket: bucket()
+    ], options)
+
+    Arc.Storage.S3.HtmlUploadForm.generate(options)
   end
 
   #
@@ -68,19 +131,20 @@ defmodule Arc.Storage.S3 do
     end
   end
 
-  defp build_url(definition, version, file_and_scope, _options) do
-    Path.join host, s3_key(definition, version, file_and_scope)
+
+  defp build_url(s3_key, options \\ []) when is_binary(s3_key) do
+    Path.join(host, s3_key)
   end
 
-  defp build_signed_url(definition, version, file_and_scope, options) do
-    options = put_in options[:expire_in], Keyword.get(options, :expire_in, @default_expiry_time)
-    options = put_in options[:virtual_host], virtual_host
+  defp build_signed_url(s3_key, options \\ []) do
+    defaults = [expire_in: @default_expiry_time, virtual_host: virtual_host()]
+    ex_aws_options = Keyword.merge(defaults, options)
     config = ExAws.Config.new(:s3, Application.get_all_env(:ex_aws))
-    {:ok, url} = ExAws.S3.presigned_url(config, :get, bucket, s3_key(definition, version, file_and_scope), options)
+    {:ok, url} = ExAws.S3.presigned_url(config, :get, bucket, s3_key, ex_aws_options)
     url
   end
 
-  defp s3_key(definition, version, file_and_scope) do
+  defp compose_s3_key(definition, version, file_and_scope) do
     Path.join([
       definition.storage_dir(version, file_and_scope),
       Arc.Definition.Versioning.resolve_file_name(definition, version, file_and_scope)
@@ -97,7 +161,7 @@ defmodule Arc.Storage.S3 do
   end
 
   defp default_host do
-    case virtual_host do
+    case virtual_host() do
       true -> "https://#{bucket}.s3.amazonaws.com"
       _    -> "https://s3.amazonaws.com/#{bucket}"
     end
