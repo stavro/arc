@@ -1,6 +1,7 @@
 defmodule ArcTest.Processor do
   use ExUnit.Case, async: false
   @img "test/support/image.png"
+  @img2 "test/support/image two.png"
 
   defmodule DummyDefinition do
     use Arc.Actions.Store
@@ -64,6 +65,14 @@ defmodule ArcTest.Processor do
     {:ok, new_file} = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(%{binary: img_binary, filename: "image.png"}), nil})
     assert new_file.path != @img
     assert "128x128" == geometry(@img) #original file untouched
+    assert "10x10" == geometry(new_file.path)
+    cleanup(new_file.path)
+  end
+
+  test "file names with spaces" do
+    {:ok, new_file} = Arc.Processor.process(DummyDefinition, :thumb, {Arc.File.new(@img2), nil})
+    assert new_file.path != @img2
+    assert "128x128" == geometry(@img2) #original file untouched
     assert "10x10" == geometry(new_file.path)
     cleanup(new_file.path)
   end

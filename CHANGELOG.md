@@ -4,6 +4,7 @@
   * (Enhancement) Allow asset host to be set via an environment variable
   * (Enhancement) Allow downloading and saving remote files
   * (Enhancement) Move Arc storage module to config
+  * (Bugfix) Split conversion arguments correctly when a file name has a space in it
   * (Bugfix) S3 object headers must be transferred to ExAws as a keyword list, not a map
   * (Bugfix) Don't prepend a forward-slash to local storage urls if the url already starts with a forward-slash.
 
