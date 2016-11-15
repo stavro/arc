@@ -14,14 +14,15 @@ defmodule Arc.File do
 
   # Given a remote file
   def new(remote_path = "http" <> _) do
-    case save_file(remote_path) do
-      {:ok, local_path} ->
-        uri = URI.parse(remote_path)
-        filename = Path.basename(uri.path)
-        %Arc.File{path: local_path, file_name: filename}
+    uri = URI.parse(remote_path)
+    filename = Path.basename(uri.path)
+
+    case save_file(uri, filename) do
+      {:ok, local_path} -> %Arc.File{path: local_path, file_name: filename}
       :error -> {:error, :invalid_file_path}
+      other -> validate_arc_file(other)
     end
-  end
+end
 
   # Accepts a path
   def new(path) when is_binary(path) do
@@ -56,16 +57,14 @@ defmodule Arc.File do
     }
   end
 
-  defp save_file(remote_path) when is_binary(remote_path) do
-    [ext | _] = String.split(Path.extname(remote_path), "?")
-
+  defp save_file(uri, filename) do
     local_path =
       generate_temporary_path()
-      |> Kernel.<>(ext)
+      |> Kernel.<>(Path.extname(filename))
 
-    case save_temp_file(local_path, remote_path) do
+    case save_temp_file(local_path, uri) do
       :ok -> {:ok, local_path}
-      _   -> :error
+      other -> validate_arc_file(other)
     end
   end
 
@@ -75,12 +74,26 @@ defmodule Arc.File do
     case remote_file do
       {:ok, body} -> File.write(local_path, body)
       {:error, error} -> {:error, error}
+      other -> validate_arc_file(other)
+    end
+  end
+
+  defp validate_arc_file(struct) do
+    cond do
+      struct.__struct__ == Arc.File -> struct
+      true -> {:error, :invalid_data}
     end
   end
 
   defp get_remote_path(remote_path) do
     case HTTPoison.get(remote_path) do
       {:ok, %{status_code: 200, body: body}} -> {:ok, body}
+      {:ok, %{status_code: 302, headers: headers}} ->
+        cond do
+          {"Location", url} = headers |> List.keyfind("Location", 0) -> new(url)
+          true -> {:error, :invalid_url}
+        end
+
       other -> {:error, :invalid_file_path}
     end
   end
