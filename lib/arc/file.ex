@@ -15,7 +15,10 @@ defmodule Arc.File do
   # Given a remote file
   def new(remote_path = "http" <> _) do
     case save_file(remote_path) do
-      {:ok, local_path} -> %Arc.File{path: local_path, file_name: Path.basename(remote_path)}
+      {:ok, local_path} ->
+        uri = URI.parse(remote_path)
+        filename = Path.basename(uri.path)
+        %Arc.File{path: local_path, file_name: filename}
       :error -> {:error, :invalid_file_path}
     end
   end
@@ -54,9 +57,11 @@ defmodule Arc.File do
   end
 
   defp save_file(remote_path) when is_binary(remote_path) do
+    [ext | _] = String.split(Path.extname(remote_path), "?")
+
     local_path =
       generate_temporary_path()
-      |> Kernel.<>(Path.extname(remote_path))
+      |> Kernel.<>(ext)
 
     case save_temp_file(local_path, remote_path) do
       :ok -> {:ok, local_path}
