@@ -20,7 +20,6 @@ defmodule Arc.File do
     case save_file(uri, filename) do
       {:ok, local_path} -> %Arc.File{path: local_path, file_name: filename}
       :error -> {:error, :invalid_file_path}
-      other -> validate_arc_file(other)
     end
 end
 
@@ -64,7 +63,7 @@ end
 
     case save_temp_file(local_path, uri) do
       :ok -> {:ok, local_path}
-      other -> validate_arc_file(other)
+      _ -> :error
     end
   end
 
@@ -74,26 +73,12 @@ end
     case remote_file do
       {:ok, body} -> File.write(local_path, body)
       {:error, error} -> {:error, error}
-      other -> validate_arc_file(other)
-    end
-  end
-
-  defp validate_arc_file(struct) do
-    cond do
-      struct.__struct__ == Arc.File -> struct
-      true -> {:error, :invalid_data}
     end
   end
 
   defp get_remote_path(remote_path) do
-    case HTTPoison.get(remote_path) do
+    case HTTPoison.get(remote_path, [], [follow_redirect: true]) do
       {:ok, %{status_code: 200, body: body}} -> {:ok, body}
-      {:ok, %{status_code: 302, headers: headers}} ->
-        cond do
-          {"Location", url} = headers |> List.keyfind("Location", 0) -> new(url)
-          true -> {:error, :invalid_url}
-        end
-
       other -> {:error, :invalid_file_path}
     end
   end
