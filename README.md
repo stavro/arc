@@ -495,6 +495,11 @@ config :ex_aws,
 
 > For your host configuration, please examine the approved [AWS Hostnames](http://docs.aws.amazon.com/general/latest/gr/rande.html).  There are often multiple hostname formats for AWS regions, and it will not work unless you specify the correct one.
 
+### Browser Uploads direct to Amazon S3
+
+For many use cases, it is unnecessary to proxy file uploads through the application layer. Certain cloud storage platforms, such as Amazon S3, allow for browsers to upload files directly to S3 to take the load off and bandwidth off of your application layer.
+
+To use direct-to-s3 uploads, please reference: https://github.com/stavro/arc/wiki/Direct-to-S3-Uploads
 
 # Full Example
 
