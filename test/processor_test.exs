@@ -10,6 +10,7 @@ defmodule ArcTest.Processor do
     def transform(:original, _), do: :noaction
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
     def transform(:med, _), do: {:convert, fn(input, output) -> " #{input} -strip -thumbnail 10x10 #{output}" end, :jpg}
+    def transform(:small, _), do: {:convert, fn(input, output) -> [input, "-strip", "-thumbnail", "10x10", output] end, :jpg}
     def __versions, do: [:original, :thumb]
   end
 
@@ -41,8 +42,16 @@ defmodule ArcTest.Processor do
     cleanup(new_file.path)
   end
 
-  test "transforms a copied version of file according to the specified function transformation" do
+  test "transforms a copied version of file according to a function transformation that returns a string" do
     new_file = Arc.Processor.process(DummyDefinition, :med, {Arc.File.new(@img), nil})
+    assert new_file.path != @img
+    assert "128x128" == geometry(@img) #original file untouched
+    assert "10x10" == geometry(new_file.path)
+    cleanup(new_file.path)
+  end
+
+  test "transforms a copied version of file according to a function transformation that returns a list" do
+    new_file = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(@img), nil})
     assert new_file.path != @img
     assert "128x128" == geometry(@img) #original file untouched
     assert "10x10" == geometry(new_file.path)

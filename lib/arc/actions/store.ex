@@ -17,7 +17,7 @@ defmodule Arc.Actions.Store do
   # Private
   #
 
-  defp put(definition, {{:error, msg}, scope}) do
+  defp put(_definition, {{:error, _msg}, _scope}) do
     {:error, :invalid_file}
   end
 

@@ -6,11 +6,14 @@ defmodule Arc.Transformations.Convert do
 
     ensure_executable_exists!(program)
 
-    System.cmd(program, ~w(#{args}), stderr_to_stdout: true)
+    System.cmd(program, args_list(args), stderr_to_stdout: true)
       |> handle_exit_code!
 
     %Arc.File{file | path: new_path}
   end
+
+  defp args_list(args) when is_list(args), do: args
+  defp args_list(args), do: ~w(#{args})
 
   defp ensure_executable_exists!(program) do
     unless System.find_executable(program) do

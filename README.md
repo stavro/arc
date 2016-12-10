@@ -14,7 +14,7 @@ Add the latest stable release to your `mix.exs` file:
 ```elixir
 defp deps do
   [
-    arc: "~> 0.5.1",
+    arc: "~> 0.5.3",
     ex_aws: "~> 0.4.10", # Required if using Amazon S3
     httpoison: "~> 0.7"  # Required if using Amazon S3
     poison: "~> 1.2"     # Required if using Amazon S3
@@ -112,7 +112,7 @@ To transform an image, the definition module must define a `transform/2` functio
 This transform handler accepts the version atom, as well as the file/scope argument, and is responsible for returning one of the following:
   * `:noaction` - The original file will be stored as-is.
   * `{executable, args}` - The `executable` will be called with `System.cmd` with the format `#{original_file_path} #{args} #{transformed_file_path}`.
-  * `{executable, fn(input, output) -> args end}` - If your executable expects arguments in a format other than the above, you may supply a function to the conversion tuple which will be invoked to generate the arguments.
+  * `{executable, fn(input, output) -> args end}` - If your executable expects arguments in a format other than the above, you may supply a function to the conversion tuple which will be invoked to generate the arguments. The arguments can be returned as a string (e.g. – `" #{input} -strip -thumbnail 10x10 #{output}"`) or a list (e.g. – `[input, "-strip", "-thumbnail", "10x10", output]`) for even more control.
   * `{executable, args, output_extension}` - If your transformation changes the file extension (eg, converting to `png`), then the new file extension must be explicit.
 
 ### ImageMagick transformations
