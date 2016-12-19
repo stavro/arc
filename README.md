@@ -54,6 +54,12 @@ config :arc,
 
 Along with any configuration necessary for ExAws.
 
+### Storage Providers
+Arc ships with integrations for Local Storage and S3.  Alternative storage providers may be supported by the community:
+
+* **Rackspace** - https://github.com/lokalebasen/arc_rackspace
+* **Manta** - https://github.com/onyxrev/arc_manta
+
 ### Usage with Ecto
 
 Arc comes with a companion package for use with Ecto.  If you intend to use Arc with Ecto, it is highly recommended you also add the [`arc_ecto`](https://github.com/stavro/arc_ecto) dependency.  Benefits include:
