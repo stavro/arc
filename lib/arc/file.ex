@@ -10,7 +10,7 @@ defmodule Arc.File do
   # Given a remote file
   def new(remote_path = "http" <> _) do
     case save_file(remote_path) do
-      {:ok, local_path} -> %Arc.File{path: local_path, file_name: Path.basename(remote_path)}
+      {:ok, local_path, file_name} -> %Arc.File{path: local_path, file_name: file_name}
       :error -> {:error, :invalid_file_path}
     end
   end
@@ -54,7 +54,7 @@ defmodule Arc.File do
       |> Kernel.<>(Path.extname(remote_path))
 
     case save_temp_file(local_path, remote_path) do
-      :ok -> {:ok, local_path}
+      {:ok, file_name} -> {:ok, local_path, file_name}
       _   -> :error
     end
   end
@@ -62,16 +62,28 @@ defmodule Arc.File do
   defp save_temp_file(local_path, remote_path) do
     remote_file = get_remote_path(remote_path)
 
-    case remote_file do
-      {:ok, body} -> File.write(local_path, body)
-      {:error, error} -> {:error, error}
+    with {:ok, body, file_name} <- get_remote_path(remote_path),
+         :ok <- File.write(local_path, body) do
+      {:ok, file_name}
     end
   end
 
   defp get_remote_path(remote_path) do
     case HTTPoison.get(remote_path) do
-      {:ok, %{status_code: 200, body: body}} -> {:ok, body}
+      {:ok, %{status_code: 200, body: body, headers: headers}} ->
+        file_name = resolve_file_name(headers) || Path.basename(remote_path)
+        {:ok, body, file_name}
       other -> {:error, :invalid_file_path}
+    end
+  end
+
+  defp resolve_file_name(response) do
+    response
+    |> Map.get(:headers)
+    |> Enum.find(fn {k, v} -> String.downcase(to_string(k)) == "content-disposition" end)
+    |> case do
+      {_k, v} -> v
+      _ -> nil
     end
   end
 end

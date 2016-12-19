@@ -91,4 +91,12 @@ defmodule ArcTest.Storage.S3HtmlUpload do
     {:error, error_message} = upload_image(@img, acl: "public-read", content_length_range: [0, 100])
     assert error_message =~ ~r/EntityTooLarge/
   end
+
+  @tag :s3
+  test "Storing an uploaded file will respect the content disposition" do
+    disposition = "attachment; filename=\"test.png\""
+    {:ok, key, response} = upload_image(@img, acl: "public-read", content_disposition: disposition)
+    file = Arc.File.new(public_url(key))
+    IO.inspect(file)
+  end
 end
