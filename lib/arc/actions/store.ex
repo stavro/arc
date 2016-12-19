@@ -26,10 +26,16 @@ defmodule Arc.Actions.Store do
   end
 
   defp put_versions(definition, {file, scope}) do
-    definition.__versions
-    |> Enum.map(fn(r)    -> async_put_version(definition, r, {file, scope}) end)
-    |> Enum.map(fn(task) -> Task.await(task, version_timeout) end)
-    |> handle_responses(file.file_name)
+    if definition.async do
+      definition.__versions
+      |> Enum.map(fn(r)    -> async_put_version(definition, r, {file, scope}) end)
+      |> Enum.map(fn(task) -> Task.await(task, version_timeout) end)
+      |> handle_responses(file.file_name)
+    else
+      definition.__versions
+      |> Enum.map(fn(version) -> put_version(definition, version, {file, scope}) end)
+      |> handle_responses(file.file_name)
+    end
   end
 
   defp handle_responses(responses, filename) do

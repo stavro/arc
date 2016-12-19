@@ -2,6 +2,7 @@ defmodule Arc.Definition.Storage do
   defmacro __using__(_) do
     quote do
       @acl :private
+      @async true
 
       def filename(_, {file, _}), do: Path.basename(file.file_name, Path.extname(file.file_name))
       def storage_dir(_, _), do: "uploads"
@@ -20,6 +21,7 @@ defmodule Arc.Definition.Storage do
     quote do
       def acl(_, _), do: @acl
       def s3_object_headers(_, _), do: []
+      def async, do: @async
     end
   end
 end
