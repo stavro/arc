@@ -1,7 +1,7 @@
 defmodule Arc.Mixfile do
   use Mix.Project
 
-  @version "0.6.0-rc3"
+  @version "0.6.0"
 
   def project do
     [app: :arc,

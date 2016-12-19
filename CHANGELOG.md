@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.0 (2016-12-19)
   * (Enhancement) Allow asset host to be set via an environment variable
   * (Enhancement) Allow downloading and saving remote files
   * (Enhancement) Move Arc storage module to config
