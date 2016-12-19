@@ -248,6 +248,8 @@ config :arc,
   :version_timeout, 15_000 # milliseconds
 ```
 
+To disable asynchronous processing, add `@async false` to your upload definition.
+
 ## Storage of files
 
 Arc currently supports Amazon S3 and local destinations for file uploads.
