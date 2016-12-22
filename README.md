@@ -18,6 +18,7 @@ defp deps do
 
     # If using Amazon S3:
     ex_aws: "~> 1.0.0",
+    hackney: "1.6.1",
     poison: "~> 2.0",
     sweet_xml: "~> 0.5"
   ]
