@@ -75,7 +75,7 @@ This definition module contains relevant functions to determine:
   * Optional transformations of the uploaded file
   * Where to put your files (the storage directory)
   * What to name your files
-  * How to secure your files (private? Or publically accessible?)
+  * How to secure your files (private? Or publicly accessible?)
   * Default placeholders
 
 To start off, generate an attachment definition:
