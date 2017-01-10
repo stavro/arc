@@ -7,11 +7,11 @@ defmodule Arc.Mixfile do
     [app: :arc,
      version: @version,
      elixir: "~> 1.0",
-     deps: deps,
+     deps: deps(),
 
     # Hex
-     description: description,
-     package: package]
+     description: description(),
+     package: package()]
   end
 
   defp description do

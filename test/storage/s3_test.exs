@@ -119,11 +119,11 @@ defmodule ArcTest.Storage.S3 do
   @tag timeout: 15000
   test "virtual_host" do
     with_env :arc, :virtual_host, true, fn ->
-      assert "https://#{env_bucket}.s3.amazonaws.com/arctest/uploads/image.png" == DummyDefinition.url(@img)
+      assert "https://#{env_bucket()}.s3.amazonaws.com/arctest/uploads/image.png" == DummyDefinition.url(@img)
     end
 
     with_env :arc, :virtual_host, false, fn ->
-      assert "https://s3.amazonaws.com/#{env_bucket}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+      assert "https://s3.amazonaws.com/#{env_bucket()}/arctest/uploads/image.png" == DummyDefinition.url(@img)
     end
   end
 
@@ -180,7 +180,7 @@ defmodule ArcTest.Storage.S3 do
   test "delete with scope" do
     scope = %{id: 1}
     {:ok, path} = DefinitionWithScope.store({"test/support/image.png", scope})
-    assert "https://s3.amazonaws.com/#{env_bucket}/uploads/with_scopes/1/image.png" == DefinitionWithScope.url({path, scope})
+    assert "https://s3.amazonaws.com/#{env_bucket()}/uploads/with_scopes/1/image.png" == DefinitionWithScope.url({path, scope})
     assert_public(DefinitionWithScope, {path, scope})
     delete_and_assert_not_found(DefinitionWithScope, {path, scope})
   end
@@ -190,7 +190,7 @@ defmodule ArcTest.Storage.S3 do
   test "put with error" do
     Application.put_env(:arc, :bucket, "unknown-bucket")
     {:error, res} = DummyDefinition.store("test/support/image.png")
-    Application.put_env :arc, :bucket, env_bucket
+    Application.put_env :arc, :bucket, env_bucket()
     assert res
   end
 

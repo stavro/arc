@@ -10,7 +10,7 @@ defmodule Arc.Storage.S3 do
     s3_options =
       definition.s3_object_headers(version, {file, scope})
       |> ensure_keyword_list()
-      |> Dict.put(:acl, acl)
+      |> Map.put(:acl, acl)
 
     do_put(file, s3_key, s3_options)
   end
@@ -23,7 +23,7 @@ defmodule Arc.Storage.S3 do
   end
 
   def delete(definition, version, {file, scope}) do
-    bucket
+    bucket()
     |> ExAws.S3.delete_object(s3_key(definition, version, {file, scope}))
     |> ExAws.request()
 
@@ -69,7 +69,7 @@ defmodule Arc.Storage.S3 do
   end
 
   defp build_url(definition, version, file_and_scope, _options) do
-    Path.join host, s3_key(definition, version, file_and_scope)
+    Path.join host(), s3_key(definition, version, file_and_scope)
   end
 
   defp build_signed_url(definition, version, file_and_scope, options) do
@@ -77,9 +77,9 @@ defmodule Arc.Storage.S3 do
     options = put_in options[:expires_in], Keyword.get(options, :expire_in, @default_expiry_time)
     # if expires_in is found in options, use that instead
     options = put_in options[:expires_in], Keyword.get(options, :expires_in, options[:expires_in])
-    options = put_in options[:virtual_host], virtual_host
+    options = put_in options[:virtual_host], virtual_host()
     config = ExAws.Config.new(:s3, Application.get_all_env(:ex_aws))
-    {:ok, url} = ExAws.S3.presigned_url(config, :get, bucket, s3_key(definition, version, file_and_scope), options)
+    {:ok, url} = ExAws.S3.presigned_url(config, :get, bucket(), s3_key(definition, version, file_and_scope), options)
     url
   end
 
@@ -91,7 +91,7 @@ defmodule Arc.Storage.S3 do
   end
 
   defp host do
-    host_url = Application.get_env(:arc, :asset_host, default_host)
+    host_url = Application.get_env(:arc, :asset_host, default_host())
 
     case host_url do
       {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
@@ -100,9 +100,9 @@ defmodule Arc.Storage.S3 do
   end
 
   defp default_host do
-    case virtual_host do
-      true -> "https://#{bucket}.s3.amazonaws.com"
-      _    -> "https://s3.amazonaws.com/#{bucket}"
+    case virtual_host() do
+      true -> "https://#{bucket()}.s3.amazonaws.com"
+      _    -> "https://s3.amazonaws.com/#{bucket()}"
     end
   end
 
