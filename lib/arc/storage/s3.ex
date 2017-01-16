@@ -10,7 +10,7 @@ defmodule Arc.Storage.S3 do
     s3_options =
       definition.s3_object_headers(version, {file, scope})
       |> ensure_keyword_list()
-      |> Map.put(:acl, acl)
+      |> Keyword.put(:acl, acl)
 
     do_put(file, s3_key, s3_options)
   end
