@@ -56,7 +56,7 @@ defmodule Arc.Storage.S3 do
       |> ExAws.S3.upload(bucket(), s3_key, s3_options)
       |> ExAws.request()
       |> case do
-        # :done -> {:ok, file.file_name}
+        {:ok, %{status_code: 200}} -> {:ok, file.file_name}
         {:ok, :done} -> {:ok, file.file_name}
         {:error, error} -> {:error, error}
       end
