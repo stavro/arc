@@ -76,10 +76,46 @@ end
     end
   end
 
+  # hakney :connect_timeout - timeout used when establishing a connection, in milliseconds
+  # hakney :recv_timeout - timeout used when receiving from a connection, in milliseconds
+  # poison :timeout - timeout to establish a connection, in milliseconds
+  # :backoff_max - maximum backoff time, in milliseconds
+  # :backoff_factor - a backoff factor to apply between attempts, in milliseconds
   defp get_remote_path(remote_path) do
-    case HTTPoison.get(remote_path, [], [follow_redirect: true]) do
+    options = [
+      follow_redirect: true,
+      recv_timeout: Application.get_env(:arc, :recv_timeout, 5_000),
+      connect_timeout: Application.get_env(:arc, :connect_timeout, 10_000),
+      timeout: Application.get_env(:arc, :timeout, 10_000),
+      max_retries: Application.get_env(:arc, :max_retries, 3),
+      backoff_factor: Application.get_env(:arc, :backoff_factor, 1000),
+      backoff_max: Application.get_env(:arc, :backoff_max, 30_000),
+    ]
+    request(remote_path, options)
+  end
+
+  defp request(remote_path, options, tries \\ 0) do
+    case HTTPoison.get(remote_path, [], options) do
       {:ok, %{status_code: 200, body: body}} -> {:ok, body}
-      other -> {:error, :invalid_file_path}
+      {:error, %{reason: :timeout}} ->
+        case retry(tries, options) do
+          {:ok, :retry} -> request(remote_path, options, tries + 1)
+          {:error, :out_of_tries} -> {:error, :timeout}
+        end
+
+      _ -> {:error, :arc_httpoison_error}
+    end
+  end
+
+  defp retry(tries, options) do
+    cond do
+      tries < options[:max_retries] ->
+        backoff = round(options[:backoff_factor] * :math.pow(2, tries - 1))
+        backoff = :erlang.min(backoff, options[:backoff_max])
+        :timer.sleep(backoff)
+        {:ok, :retry}
+
+      true -> {:error, :out_of_tries}
     end
   end
 end

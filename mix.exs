@@ -47,7 +47,7 @@ defmodule Arc.Mixfile do
       {:ex_doc, "~> 0.14", only: :dev},
 
       # If using Amazon S3:
-      {:poison, "~> 2.2", optional: true},
+      {:poison, "~> 2.2 or ~> 3.1", optional: true},
       {:sweet_xml, "~> 0.6", optional: true}
     ]
   end
