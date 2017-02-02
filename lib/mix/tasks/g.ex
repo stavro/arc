@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Arc do
   defmodule G do
     use Mix.Task
     import Mix.Generator
-    import Mix.Utils, only: [camelize: 1, underscore: 1]
+    import Macro, only: [camelize: 1, underscore: 1]
 
     @shortdoc "For Arc definition generation code"
 
