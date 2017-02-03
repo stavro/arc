@@ -24,7 +24,7 @@ defmodule Arc.Actions.Delete do
   defp do_delete(definition, {file, scope}) do
     definition.__versions
     |> Enum.map(fn(r)     -> async_delete_version(definition, r, {file, scope}) end)
-    |> Enum.each(fn(task) -> Task.await(task, version_timeout) end)
+    |> Enum.each(fn(task) -> Task.await(task, version_timeout()) end)
     :ok
   end
 

@@ -73,10 +73,11 @@ defmodule Arc.Storage.S3 do
   end
 
   defp build_signed_url(definition, version, file_and_scope, options) do
-    # previous arc argument was expire_in instead of expires_in
-    options = put_in options[:expires_in], Keyword.get(options, :expire_in, @default_expiry_time)
-    # if expires_in is found in options, use that instead
-    options = put_in options[:expires_in], Keyword.get(options, :expires_in, options[:expires_in])
+    # Previous arc argument was expire_in instead of expires_in
+    # check for expires_in, if not present, use expire_at.
+    options = put_in options[:expires_in], Keyword.get(options, :expires_in, options[:expire_in])
+    # fallback to default, if neither is present.
+    options = put_in options[:expires_in], options[:expires_in] || @default_expiry_time
     options = put_in options[:virtual_host], virtual_host()
     config = ExAws.Config.new(:s3, Application.get_all_env(:ex_aws))
     {:ok, url} = ExAws.S3.presigned_url(config, :get, bucket(), s3_key(definition, version, file_and_scope), options)
