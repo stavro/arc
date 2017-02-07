@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## v0.7.0 (2017-02-07)
+  * Relax dependencies
+  * Fix Elixir v1.4 warnings
   * (Enhancement) Disable asynchronous processing via module attribute `@async false`.
+  * (Enhancement) Add retry functionality to remote path uploader
 
 ## v0.6.0 (2016-12-19)
   * (Enhancement) Allow asset host to be set via an environment variable
