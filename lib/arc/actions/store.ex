@@ -29,7 +29,7 @@ defmodule Arc.Actions.Store do
     if definition.async do
       definition.__versions
       |> Enum.map(fn(r)    -> async_put_version(definition, r, {file, scope}) end)
-      |> Enum.map(fn(task) -> Task.await(task, version_timeout) end)
+      |> Enum.map(fn(task) -> Task.await(task, version_timeout()) end)
       |> handle_responses(file.file_name)
     else
       definition.__versions
