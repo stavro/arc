@@ -57,9 +57,8 @@ defmodule Arc.Storage.Filesystem do
   def get_upload_dir() do
     case Application.fetch_env!(:arc, :upload_dir) do
       {:system, env} when not is_nil(env) ->
-        # todo: make sure path is not nil
         System.get_env(env)
-      path when not is_nil(path) ->
+      path when is_binary(path) ->
         path
     end
   end
