@@ -2,7 +2,7 @@ defmodule ArcTest.Storage.Filesystem do
   use ExUnit.Case
   @img "test/support/image.png"
 
-  setup do
+  setup_all do
     File.mkdir_p("arctest/filesystem_uploads")
 
     on_exit fn ->
