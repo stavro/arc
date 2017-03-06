@@ -31,8 +31,8 @@ defmodule ArcTest.Storage.Filesystem do
   end
 
   test "put, delete, get with :system upload_dir" do
-    System.put_env("PATH", "arctest/filesystem_uploads")
-    Application.put_env(:arc, :upload_dir, {:system, "PATH"})
+    System.put_env("UPLOAD_DIR", "arctest/filesystem_uploads")
+    Application.put_env(:arc, :upload_dir, {:system, "UPLOAD_DIR"})
     test_put_delete_get()
   end
 
