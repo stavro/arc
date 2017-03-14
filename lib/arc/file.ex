@@ -5,7 +5,7 @@ defmodule Arc.File do
     extension = Path.extname((file && file.path) || "")
 
     file_name =
-      :crypto.rand_bytes(20)
+      :crypto.strong_rand_bytes(20)
       |> Base.encode32()
       |> Kernel.<>(extension)
 
