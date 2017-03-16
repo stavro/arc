@@ -7,7 +7,13 @@ defmodule Mix.Tasks.Arc do
     @shortdoc "For Arc definition generation code"
 
     @moduledoc """
-      A task for generating arc uploader modules.
+    A task for generating arc uploader modules.
+
+    The generated attachment definition is stored in `web/uploaders`.
+
+    ## Example
+
+        mix arc.g avatar   # creates web/uploaders/avatar.ex
     """
 
     def run([model_name]) do
