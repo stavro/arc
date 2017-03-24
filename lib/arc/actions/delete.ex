@@ -22,15 +22,22 @@ defmodule Arc.Actions.Delete do
   end
 
   defp do_delete(definition, {file, scope}) do
-    definition.__versions
-    |> Enum.map(fn(r)     -> async_delete_version(definition, r, {file, scope}) end)
-    |> Enum.each(fn(task) -> Task.await(task, version_timeout()) end)
+    if definition.async do
+      definition.__versions
+      |> Enum.map(fn(r)     -> async_delete_version(definition, r, {file, scope}) end)
+      |> Enum.each(fn(task) -> Task.await(task, version_timeout()) end)
+    else
+      definition.__versions
+      |> Enum.map(fn(version) -> delete_version(definition, version, {file, scope}) end)
+    end
     :ok
   end
 
   defp async_delete_version(definition, version, {file, scope}) do
-    Task.async(fn ->
-      definition.__storage.delete(definition, version, {file, scope})
-    end)
+    Task.async(fn -> delete_version(definition, version, {file, scope}) end)
+  end
+
+  defp delete_version(definition, version, {file, scope}) do
+    definition.__storage.delete(definition, version, {file, scope})
   end
 end
