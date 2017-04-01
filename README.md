@@ -105,6 +105,7 @@ The upload definition file responds to `Avatar.store/1` which accepts either:
   * A path to a remote `http` or `https` file
   * A map with a filename and path keys (eg, a `%Plug.Upload{}`)
   * A map with a filename and binary keys (eg, `%{filename: "image.png", binary: <<255,255,255,...>>}`)
+  * A map with a filename and base64 keys (eg, `%{filename: "image.png", base64: "Zm9vYmFy..."}`)
   * A two-tuple consisting of one of the above file formats as well as a scope object.
 
 Example usage as general file store:
@@ -122,6 +123,10 @@ Avatar.store(%Plug.Upload{filename: "file.png", path: "/a/b/c"}) #=> {:ok, "file
 # Store a file from a connection body
 {:ok, data, _conn} = Plug.Conn.read_body(conn)
 Avatar.store(%{filename: "file.png", binary: data})
+
+# Store a file with a base64 data
+{:ok, data, _conn} = Plug.Conn.read_body(conn)
+Avatar.store(%{filename: "file.png", base64: data})
 ```
 
 Example usage as a file attached to a `scope`:
