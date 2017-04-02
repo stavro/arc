@@ -10,7 +10,7 @@ defmodule Arc.Storage.Local do
       File.copy!(file.path, path)
     end
 
-    {:ok, file.file_name}
+    {:ok, path}
   end
 
   def url(definition, version, file_and_scope, _options \\ []) do
