@@ -16,11 +16,13 @@ defmodule Arc.Storage.Local do
   def url(definition, version, file_and_scope, _options \\ []) do
     local_path = build_local_path(definition, version, file_and_scope)
 
-    if String.starts_with?(local_path, "/") do
+    url = if String.starts_with?(local_path, "/") do
       local_path
     else
       "/" <> local_path
     end
+
+    url |> URI.encode()
   end
 
   def delete(definition, version, file_and_scope) do
