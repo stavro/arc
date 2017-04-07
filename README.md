@@ -25,6 +25,9 @@ defp deps do
 end
 ```
 
+> Note: If you use Arch along Phoenix framework then Phoenix `"=< 1.2"` uses `{:poison, "~> 2.0"}`. Therefore you may want to specify `"poison: "~> 2.1"`
+> This will be solved in Phoenix `"~> 1.3"` as it will support Poison `"~> 3.0"` [more here](https://github.com/stavro/arc/issues/180)
+
 If you plan on using Amazon's S3 Storage, you must also add `ex_aws`, `hackney`, and `poison` as startup dependencies your application's `mix.exs` file:
 
 ```elixir
