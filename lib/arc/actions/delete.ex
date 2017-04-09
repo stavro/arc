@@ -2,6 +2,8 @@ defmodule Arc.Actions.Delete do
   defmacro __using__(_) do
     quote do
       def delete(args), do: Arc.Actions.Delete.delete(__MODULE__, args)
+      
+      defoverridable [{:delete, 1}]
     end
   end
 
