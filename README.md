@@ -49,7 +49,7 @@ Arc expects certain properties to be configured at the application level:
 ```elixir
 config :arc,
   storage: Arc.Storage.S3, # or Arc.Storage.Local
-  bucket: {:system, "AWS_S3_BUCKET"}, # if using Amazon S3
+  bucket: {:system, "AWS_S3_BUCKET"} # if using Amazon S3
 ```
 
 Along with any configuration necessary for ExAws.
