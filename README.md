@@ -50,6 +50,7 @@ Arc expects certain properties to be configured at the application level:
 config :arc,
   storage: Arc.Storage.S3, # or Arc.Storage.Local
   bucket: {:system, "AWS_S3_BUCKET"}, # if using Amazon S3
+  asset_host: "http://static.example.com" # or {:system "ASSET_HOST"}
 ```
 
 Along with any configuration necessary for ExAws.

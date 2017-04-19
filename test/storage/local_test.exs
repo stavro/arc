@@ -1,12 +1,25 @@
 defmodule ArcTest.Storage.Local do
   use ExUnit.Case
   @img "test/support/image.png"
+  @custom_asset_host "http://static.example.com"
 
   setup_all do
     File.mkdir_p("arctest/uploads")
 
     on_exit fn ->
       File.rm_rf("arctest/uploads")
+    end
+  end
+
+  def with_env(app, key, value, fun) do
+    previous = Application.get_env(app, key, :nothing)
+
+    Application.put_env(app, key, value)
+    fun.()
+
+    case previous do
+      :nothing -> Application.delete_env(app, key)
+      _ -> Application.put_env(app, key, previous)
     end
   end
 
@@ -39,6 +52,24 @@ defmodule ArcTest.Storage.Local do
     :ok = Arc.Storage.Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
     refute File.exists?("arctest/uploads/original-image.png")
     refute File.exists?("arctest/uploads/1/thumb-image.png")
+  end
+
+  test "get, delete with :asset_host set" do
+    with_env :arc, :asset_host, @custom_asset_host, fn ->
+
+      assert {:ok, "original-image.png"} == Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{filename: "original-image.png", path: @img}), nil})
+      assert {:ok, "1/thumb-image.png"} == Arc.Storage.Local.put(DummyDefinition, :thumb, {Arc.File.new(%{filename: "1/thumb-image.png", path: @img}), nil})
+
+      assert File.exists?("arctest/uploads/original-image.png")
+      assert File.exists?("arctest/uploads/1/thumb-image.png")
+      assert @custom_asset_host <> "/arctest/uploads/original-image.png" == DummyDefinition.url("image.png", :original)
+      assert @custom_asset_host <> "/arctest/uploads/1/thumb-image.png" == DummyDefinition.url("1/image.png", :thumb)
+
+      :ok = Arc.Storage.Local.delete(DummyDefinition, :original, {%{file_name: "image.png"}, nil})
+      :ok = Arc.Storage.Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
+      refute File.exists?("arctest/uploads/original-image.png")
+      refute File.exists?("arctest/uploads/1/thumb-image.png")
+    end
   end
 
   test "save binary" do
