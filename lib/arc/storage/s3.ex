@@ -69,7 +69,8 @@ defmodule Arc.Storage.S3 do
   end
 
   defp build_url(definition, version, file_and_scope, _options) do
-    Path.join host(), s3_key(definition, version, file_and_scope)
+    url = Path.join host(), s3_key(definition, version, file_and_scope)
+    url |> URI.encode()
   end
 
   defp build_signed_url(definition, version, file_and_scope, options) do

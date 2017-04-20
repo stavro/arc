@@ -144,6 +144,13 @@ defmodule ArcTest.Storage.S3 do
 
   @tag :s3
   @tag timeout: 15000
+  test "encoded url" do
+    url = DummyDefinition.url(@img_with_space)
+    assert "https://s3.amazonaws.com/#{env_bucket()}/arctest/uploads/image%20two.png" == url
+  end
+
+  @tag :s3
+  @tag timeout: 15000
   test "public put and get" do
     assert {:ok, "image.png"} == DummyDefinition.store(@img)
     assert_public(DummyDefinition, "image.png")

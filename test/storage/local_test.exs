@@ -45,4 +45,9 @@ defmodule ArcTest.Storage.Local do
     Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{binary: "binary", filename: "binary.png"}), nil})
     assert true == File.exists?("arctest/uploads/binary.png")
   end
+
+  test "encoded url" do
+    url = Arc.Storage.Local.url(DummyDefinition, :original, {Arc.File.new(%{binary: "binary", filename: "binary file.png"}), nil})
+    assert "/arctest/uploads/original-binary%20file.png" == url
+  end
 end
