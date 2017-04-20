@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.8.0 (2017-02-07)
+  * (Enhancement) Fix elixir warnings.
+  * (Enhancement) Allow delete/1 to be overridden.
+  * (Enhancement) Deletions follow same async behavior as uploads.
+  * (Minor Breaking Change) URL encode returned urls.  If you were explicitly encoding them yourself, you don't need to do this anymore.
+
 ## v0.7.0 (2017-02-07)
   * Require Elixir v1.4
   * Relax package dependencies
