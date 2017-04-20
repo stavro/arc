@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.8.0 (2017-02-07)
+## v0.8.0 (2017-04-20)
   * (Enhancement) Fix elixir warnings.
   * (Enhancement) Allow delete/1 to be overridden.
   * (Enhancement) Deletions follow same async behavior as uploads.
