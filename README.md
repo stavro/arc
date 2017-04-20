@@ -393,7 +393,8 @@ Examples:
 ```elixir
 # To retain the original filename, but prefix the version and user id:
 def filename(version, {file, scope}) do
-  "#{scope.id}_#{version}_#{file.file_name}"
+  file_name = Path.basename(file.file_name, Path.extname(file.file_name))
+  "#{scope.id}_#{version}_#{file_name}"
 end
 
 # To make the destination file the same as the version:
