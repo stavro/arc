@@ -59,6 +59,7 @@ Arc ships with integrations for Local Storage and S3.  Alternative storage provi
 
 * **Rackspace** - https://github.com/lokalebasen/arc_rackspace
 * **Manta** - https://github.com/onyxrev/arc_manta
+* **OVH** - https://github.com/stephenmoloney/arc_ovh
 
 ### Usage with Ecto
 
