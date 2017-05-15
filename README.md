@@ -19,7 +19,8 @@ defp deps do
     # If using Amazon S3:
     ex_aws: "~> 1.1",
     hackney: "~> 1.6",
-    poison: "~> 3.1",
+    # If using phoenix 1.2.3 then you will need to use poison 2.2
+    poison: "~> 3.1", 
     sweet_xml: "~> 0.6"
   ]
 end
