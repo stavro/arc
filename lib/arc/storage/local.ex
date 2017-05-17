@@ -32,7 +32,7 @@ defmodule Arc.Storage.Local do
 
   defp build_local_path(definition, version, file_and_scope) do
     Path.join([
-      definition.storage_dir(version, file_and_scope),
+      definition.request_dir(version, file_and_scope),
       Arc.Definition.Versioning.resolve_file_name(definition, version, file_and_scope)
     ])
   end
