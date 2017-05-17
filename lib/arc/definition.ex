@@ -4,6 +4,7 @@ defmodule Arc.Definition do
       use Arc.Definition.Versioning
       use Arc.Definition.Storage
 
+      use Arc.Actions.Validate
       use Arc.Actions.Store
       use Arc.Actions.Delete
       use Arc.Actions.Url
