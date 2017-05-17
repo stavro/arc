@@ -1,7 +1,6 @@
 defmodule ArcTest.Actions.Validate do
   use ExUnit.Case, async: false
   @img "test/support/image.png"
-  import Mock
 
   defmodule DummyDefinition do
     use Arc.Actions.Validate
