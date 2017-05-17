@@ -20,7 +20,8 @@ defmodule ArcTest.Storage.Local do
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
     def transform(:original, _), do: :noaction
     def __versions, do: [:original, :thumb]
-    def storage_dir(_, _), do: "arctest/uploads"
+    def storage_dir(_, _), do: "priv/arctest/uploads"
+    def request_dir(_, _), do: "arctest/uploads"
     def __storage, do: Arc.Storage.Local
     def filename(:original, {file, _}), do: "original-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
     def filename(:thumb, {file, _}), do: "1/thumb-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
@@ -30,8 +31,8 @@ defmodule ArcTest.Storage.Local do
     assert {:ok, "original-image.png"} == Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{filename: "original-image.png", path: @img}), nil})
     assert {:ok, "1/thumb-image.png"} == Arc.Storage.Local.put(DummyDefinition, :thumb, {Arc.File.new(%{filename: "1/thumb-image.png", path: @img}), nil})
 
-    assert File.exists?("arctest/uploads/original-image.png")
-    assert File.exists?("arctest/uploads/1/thumb-image.png")
+    assert File.exists?("priv/arctest/uploads/original-image.png")
+    assert File.exists?("priv/arctest/uploads/1/thumb-image.png")
     assert "/arctest/uploads/original-image.png" == DummyDefinition.url("image.png", :original)
     assert "/arctest/uploads/1/thumb-image.png" == DummyDefinition.url("1/image.png", :thumb)
 
@@ -43,7 +44,7 @@ defmodule ArcTest.Storage.Local do
 
   test "save binary" do
     Arc.Storage.Local.put(DummyDefinition, :original, {Arc.File.new(%{binary: "binary", filename: "binary.png"}), nil})
-    assert true == File.exists?("arctest/uploads/binary.png")
+    assert true == File.exists?("priv/arctest/uploads/binary.png")
   end
 
   test "encoded url" do
