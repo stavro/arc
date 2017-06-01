@@ -140,6 +140,10 @@ defmodule ArcTest.Storage.S3 do
       System.put_env("ARC_ASSET_HOST", custom_asset_host)
       assert "#{custom_asset_host}/arctest/uploads/image.png" == DummyDefinition.url(@img)
     end
+
+    with_env :arc, :asset_host, false, fn ->
+      assert "https://s3.amazonaws.com/#{env_bucket()}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    end
   end
 
   @tag :s3
