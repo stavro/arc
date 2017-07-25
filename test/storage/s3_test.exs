@@ -30,6 +30,11 @@ defmodule ArcTest.Storage.S3 do
     def storage_dir(_, {_, scope}), do: "uploads/with_scopes/#{scope.id}"
   end
 
+  defmodule DefinitionWithBucket do
+    use Arc.Definition
+    def bucket, do: :custom_bucket_name
+  end
+
   def env_bucket do
     System.get_env("ARC_TEST_BUCKET")
   end
@@ -190,6 +195,16 @@ defmodule ArcTest.Storage.S3 do
     assert "https://s3.amazonaws.com/#{env_bucket()}/uploads/with_scopes/1/image.png" == DefinitionWithScope.url({path, scope})
     assert_public(DefinitionWithScope, {path, scope})
     delete_and_assert_not_found(DefinitionWithScope, {path, scope})
+  end
+
+  @tag :s3
+  @tag timeout: 150000
+  test "with bucket" do
+    url = "https://s3.amazonaws.com/custom_bucket_name/uploads/image.png"
+    assert url == DefinitionWithBucket.url("test/support/image.png")
+    {:ok, path} = DefinitionWithBucket.store("test/support/image.png")
+    assert url == path
+    delete_and_assert_not_found(DefinitionWithBucket, "test/support/image.png")
   end
 
   @tag :s3

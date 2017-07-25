@@ -310,6 +310,16 @@ end
 
 > **Note**: The storage directory is used for both local filestorage (as the relative or absolute directory), and S3 storage, as the path name (not including the bucket).
 
+### Specify multiple buckets
+
+Arc lets you specify a bucket on a per defintion basis. In case you want to use
+multiple buckets, you can specify a bucket in the uploader definition file
+like this:
+
+```elixir
+def bucket, do: :some_custom_bucket_name
+```
+
 ### Access Control Permissions
 
 Arc defaults all uploads to `private`.  In cases where it is desired to have your uploads public, you may set the ACL at the module level (which applies to all versions):
