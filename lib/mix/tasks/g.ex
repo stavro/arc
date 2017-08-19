@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Arc do
 
     defp generate_phx_uploader_file(model_name, project_module_name) do
       app_name = Mix.Project.config[:app]
-      model_destination = Path.join(System.cwd(), "/#{app_name}_web/uploaders/#{underscore(model_name)}.ex")
+      model_destination = Path.join(System.cwd(), "/lib/#{app_name}_web/uploaders/#{underscore(model_name)}.ex")
       create_uploader(model_name, project_module_name, model_destination)
     end
 
