@@ -11,15 +11,27 @@ defmodule Mix.Tasks.Arc do
 
     The generated attachment definition is stored in `web/uploaders`.
 
+    Pass "phx_layout" to use Phoenix 1.3 directory layout 
+    when generating attachment definition (i.e. [APP_NAME]_web/uploaders/).
+
     ## Example
 
         mix arc.g avatar   # creates web/uploaders/avatar.ex
+
+        mix arc.g avatar phx_layout    # creates [APP_NAME]_web/uploaders/avatar.ex
     """
 
     def run([model_name]) do
+      run([model_name, "standard_layout"])
+    end
+
+    def run([model_name, layout]) do
       app_name = Mix.Project.config[:app]
       project_module_name = camelize(to_string(app_name))
-      generate_uploader_file(model_name, project_module_name)
+      case layout do
+        "standard_layout" ->  generate_uploader_file(model_name, project_module_name)
+        "phx_layout" -> generate_phx_uploader_file(model_name, project_module_name)
+      end
     end
 
     def run(_) do
@@ -28,6 +40,16 @@ defmodule Mix.Tasks.Arc do
 
     defp generate_uploader_file(model_name, project_module_name) do
       model_destination = Path.join(System.cwd(), "/web/uploaders/#{underscore(model_name)}.ex")
+      create_uploader(model_name, project_module_name, model_destination)
+    end
+
+    defp generate_phx_uploader_file(model_name, project_module_name) do
+      app_name = Mix.Project.config[:app]
+      model_destination = Path.join(System.cwd(), "/#{app_name}_web/uploaders/#{underscore(model_name)}.ex")
+      create_uploader(model_name, project_module_name, model_destination)
+    end
+
+    defp create_uploader(model_name, project_module_name, model_destination) do
       create_file model_destination, uploader_template(
           model_name: model_name,
           uploader_model_name: Module.concat(project_module_name, camelize(model_name))
