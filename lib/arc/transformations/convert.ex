@@ -1,7 +1,8 @@
 defmodule Arc.Transformations.Convert do
-  def apply(cmd, file, args) do
-    new_path = Arc.File.generate_temporary_path(file)
-    args     = if is_function(args), do: args.(file.path, new_path), else: [file.path | (String.split(args, " ") ++ [new_path])]
+  def apply(cmd, file, args, format) do
+    extension = if format, do: ".#{ format}", else:  nil
+    new_path = Arc.File.generate_temporary_path(file, extension)
+    args     = if is_function(args), do: args.(file.path, new_path), else: [file.path | (String.split(args, " ") ++ ["-verbose"] ++ [new_path])]
     program  = to_string(cmd)
 
     ensure_executable_exists!(program)
