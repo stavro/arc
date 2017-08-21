@@ -69,6 +69,19 @@ defmodule ArcTest.Processor do
     cleanup(new_file.path)
   end
 
+  test "converts format of file while transforming a file" do
+    img_binary = File.read!(@img)
+    {:ok, new_file} = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(%{binary: img_binary, filename: "image.jpg"}), :jpg})
+    assert new_file.path != @img
+    assert "128x128" == geometry(@img) #original file untouched
+    assert "10x10" == geometry(new_file.path)
+    assert ".jpg" == Path.extname(new_file.path)
+    new_binary = File.read!(new_file.path)
+   <<255, 216, 255, data :: binary >> = new_binary #check file header for JPGness
+    assert data != nil
+    cleanup(new_file.path)
+  end
+
   test "file names with spaces" do
     {:ok, new_file} = Arc.Processor.process(DummyDefinition, :thumb, {Arc.File.new(@img2), nil})
     assert new_file.path != @img2
