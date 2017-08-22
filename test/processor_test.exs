@@ -2,6 +2,7 @@ defmodule ArcTest.Processor do
   use ExUnit.Case, async: false
   @img "test/support/image.png"
   @img2 "test/support/image two.png"
+  @pdf  "test/support/multi_page.pdf"
 
   defmodule DummyDefinition do
     use Arc.Actions.Store
@@ -80,6 +81,21 @@ defmodule ArcTest.Processor do
    <<255, 216, 255, data :: binary >> = new_binary #check file header for JPGness
     assert data != nil
     cleanup(new_file.path)
+  end
+
+  test "transforms a multi-page file into multiple files" do
+    img_binary = File.read!(@pdf)
+    {:ok, new_files} = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(%{binary: img_binary, filename: "image.jpg"}), :jpg})
+    [first | rest]  =  new_files
+    assert first != nil
+    assert rest != nil
+    assert length(new_files) == 2
+    Enum.map(new_files, fn(file) ->
+      assert file.path != @pdf
+      assert "612x792" == geometry(@pdf) #original file untouched
+      assert "8x10" == geometry(file.path)
+      cleanup(file.path)
+      end)
   end
 
   test "file names with spaces" do
