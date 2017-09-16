@@ -28,14 +28,24 @@ defmodule Arc.Actions.Store do
   defp put_versions(definition, {file, scope}) do
     if definition.async do
       definition.__versions
-      |> Enum.map(fn(r)    -> async_put_version(definition, r, {file, scope}) end)
+      |> Enum.map(fn(r)    -> async_process_version(definition, r, {file, scope}) end)
+      |> Enum.map(fn(task) -> Task.await(task, version_timeout()) end)
+      |> ensure_all_success
+      |> Enum.map(fn({v, r})    -> async_put_version(definition, v, {r, scope}) end)
       |> Enum.map(fn(task) -> Task.await(task, version_timeout()) end)
       |> handle_responses(file.file_name)
     else
       definition.__versions
-      |> Enum.map(fn(version) -> put_version(definition, version, {file, scope}) end)
+      |> Enum.map(fn(version) -> process_version(definition, version, {file, scope}) end)
+      |> ensure_all_success
+      |> Enum.map(fn({version, result}) -> put_version(definition, version, {result, scope}) end)
       |> handle_responses(file.file_name)
     end
+  end
+
+  defp ensure_all_success(responses) do
+    errors = Enum.filter(responses, fn({version, resp}) -> elem(resp, 0) == :error end)
+    if Enum.empty?(errors), do: responses, else: errors
   end
 
   defp handle_responses(responses, filename) do
@@ -47,19 +57,30 @@ defmodule Arc.Actions.Store do
     Application.get_env(:arc, :version_timeout) || 15_000
   end
 
-  defp async_put_version(definition, version, {file, scope}) do
+  defp async_process_version(definition, version, {file, scope}) do
     Task.async(fn ->
-      put_version(definition, version, {file, scope})
+      process_version(definition, version, {file, scope})
     end)
   end
 
-  defp put_version(definition, version, {file, scope}) do
-    case Arc.Processor.process(definition, version, {file, scope}) do
+  defp async_put_version(definition, version, {result, scope}) do
+    Task.async(fn ->
+      put_version(definition, version, {result, scope})
+    end)
+  end
+
+  defp process_version(definition, version, {file, scope}) do
+    {version, Arc.Processor.process(definition, version, {file, scope})}
+  end
+
+  defp put_version(definition, version, {result, scope}) do
+    case result do
       {:error, error} -> {:error, error}
       {:ok, file} ->
         file_name = Arc.Definition.Versioning.resolve_file_name(definition, version, {file, scope})
         file      = %Arc.File{file | file_name: file_name}
-        definition.__storage.put(definition, version, {file, scope})
+        result = definition.__storage.put(definition, version, {file, scope})
+        result
     end
   end
 end
