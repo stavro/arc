@@ -7,8 +7,6 @@ defmodule Arc.Actions.Store do
 
   @doc """
   This calls the put/3 to store the file under the named scope.
-
-  File creation is done during function calling.
   """
   def store(definition, {file, scope}) when is_binary(file) or is_map(file) do
     put(definition, {Arc.File.new(file), scope})
@@ -23,11 +21,9 @@ defmodule Arc.Actions.Store do
     store(definition, {filepath, nil})
   end
 
-  #
-  # Private
-  #
-
-
+  @doc """
+  Validates file and on success call put_versions/2
+  """
   defp put(_definition, { error = {:error, _msg}, _scope}), do: error
   defp put(definition, {%Arc.File{}=file, scope}) do
     case definition.validate({file, scope}) do
@@ -36,6 +32,9 @@ defmodule Arc.Actions.Store do
     end
   end
 
+  @doc """
+  Creates all versions of the given file and calls handle_responses/2
+  """
   defp put_versions(definition, {file, scope}) do
     if definition.async do
       definition.__versions
@@ -49,21 +48,38 @@ defmodule Arc.Actions.Store do
     end
   end
 
+  @doc """
+  Checks if all versions were created successfully
+  """
   defp handle_responses(responses, filename) do
-    errors = Enum.filter(responses, fn(resp) -> elem(resp, 0) == :error end) |> Enum.map(fn(err) -> elem(err, 1) end)
-    if Enum.empty?(errors), do: {:ok, filename}, else: {:error, errors}
+    errors = 
+      Enum.filter(responses, fn(resp) -> elem(resp, 0) == :error end) 
+      |> Enum.map(fn(err) -> elem(err, 1) end)
+    
+    if Enum.empty?(errors), 
+    do: {:ok, filename}, 
+    else: {:error, errors}
   end
 
+  @doc """
+  Get timeout configuration from application config or default to 15s
+  """
   defp version_timeout do
     Application.get_env(:arc, :version_timeout) || 15_000
   end
 
+  @doc """
+  A wrapper to generate versions asynchronously
+  """
   defp async_put_version(definition, version, {file, scope}) do
     Task.async(fn ->
       put_version(definition, version, {file, scope})
     end)
   end
 
+  @doc """
+  Calls Arc.Processor.process/3 to actually generate all versions
+  """
   defp put_version(definition, version, {file, scope}) do
     case Arc.Processor.process(definition, version, {file, scope}) do
       {:error, error} -> {:error, error}

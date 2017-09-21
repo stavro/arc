@@ -1,6 +1,7 @@
 defmodule Arc.Definition.Storage do
   defmacro __using__(_) do
     quote do
+      # Access control permission for AWS
       @acl :private
       @async true
 
@@ -49,7 +50,7 @@ defmodule Arc.Definition.Storage do
   defmacro __before_compile__(_env) do
     quote do
       @doc """
-      Returns true by default
+      Returns :private by default
       """
       def acl(_, _), do: @acl
 

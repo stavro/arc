@@ -57,9 +57,16 @@ defmodule Arc.File do
     end
   end
 
+  @doc """
+  If %Arc.File{} contains `:binary`, this function saves the file 
+  and replaces `:binary` with `:path`.
+  """
   def ensure_path(file = %{path: path}) when is_binary(path), do: file
   def ensure_path(file = %{binary: binary}) when is_binary(binary), do: write_binary(file)
 
+  @doc """
+  Creates file in a temporary location from given binary
+  """
   defp write_binary(file) do
     path = generate_temporary_path(file)
     :ok = File.write!(path, file.binary)
@@ -70,6 +77,9 @@ defmodule Arc.File do
     }
   end
 
+  @doc """
+  Saves remote file in a temporary location and returns the tmp path
+  """
   defp save_file(uri, filename) do
     local_path =
       generate_temporary_path()
@@ -81,6 +91,9 @@ defmodule Arc.File do
     end
   end
 
+  @doc """
+  Helper function for save_file/2 to get remote file
+  """
   defp save_temp_file(local_path, remote_path) do
     remote_file = get_remote_path(remote_path)
 
@@ -90,11 +103,15 @@ defmodule Arc.File do
     end
   end
 
-  # hakney :connect_timeout - timeout used when establishing a connection, in milliseconds
-  # hakney :recv_timeout - timeout used when receiving from a connection, in milliseconds
-  # poison :timeout - timeout to establish a connection, in milliseconds
-  # :backoff_max - maximum backoff time, in milliseconds
-  # :backoff_factor - a backoff factor to apply between attempts, in milliseconds
+  @doc """
+  Helper function to download the remote file
+
+  hakney :connect_timeout - timeout used when establishing a connection, in milliseconds
+  hakney :recv_timeout - timeout used when receiving from a connection, in milliseconds
+  poison :timeout - timeout to establish a connection, in milliseconds
+  :backoff_max - maximum backoff time, in milliseconds
+  :backoff_factor - a backoff factor to apply between attempts, in milliseconds
+  """
   defp get_remote_path(remote_path) do
     options = [
       follow_redirect: true,
@@ -108,6 +125,9 @@ defmodule Arc.File do
     request(remote_path, options)
   end
 
+  @doc """
+  Helper function to actually download the remote file using HTTPoison
+  """
   defp request(remote_path, options, tries \\ 0) do
     case HTTPoison.get(remote_path, [], options) do
       {:ok, %{status_code: 200, body: body}} -> {:ok, body}
@@ -121,6 +141,9 @@ defmodule Arc.File do
     end
   end
 
+  @doc """
+  Helper function to retry upon failure to acquire remote file
+  """
   defp retry(tries, options) do
     cond do
       tries < options[:max_retries] ->
