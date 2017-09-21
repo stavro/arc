@@ -1,6 +1,9 @@
 defmodule Arc.File do
   defstruct [:path, :file_name, :binary]
 
+  @doc """
+  This function generates a temporary file path to save a file to
+  """
   def generate_temporary_path(file \\ nil) do
     extension = Path.extname((file && file.path) || "")
 
@@ -12,7 +15,11 @@ defmodule Arc.File do
     Path.join(System.tmp_dir, file_name)
   end
 
-  # Given a remote file
+  @doc """
+  Extracts remote file and creates an %Arc.File{} struct
+
+  Returns a %Arc.File{} on success.
+  """
   def new(remote_path = "http" <> _) do
     uri = URI.parse(remote_path)
     filename = Path.basename(uri.path)
@@ -21,9 +28,11 @@ defmodule Arc.File do
       {:ok, local_path} -> %Arc.File{path: local_path, file_name: filename}
       :error -> {:error, :invalid_file_path}
     end
-end
+  end
 
-  # Accepts a path
+  @doc """
+  Creates an %Arc.File{} struct directly from the given file path
+  """
   def new(path) when is_binary(path) do
     case File.exists?(path) do
       true -> %Arc.File{path: path, file_name: Path.basename(path)}
@@ -31,11 +40,16 @@ end
     end
   end
 
+  @doc """
+  Creates an %Arc.File{} struct directly from the given file binary
+  """
   def new(%{filename: filename, binary: binary}) do
     %Arc.File{binary: binary, file_name: Path.basename(filename)}
   end
 
-  # Accepts a map conforming to %Plug.Upload{} syntax
+  @doc """
+  Accepts a map conforming to %Plug.Upload{} syntax and creates an %Arc.File{} struct
+  """
   def new(%{filename: filename, path: path}) do
     case File.exists?(path) do
       true -> %Arc.File{path: path, file_name: filename}

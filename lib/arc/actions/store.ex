@@ -5,10 +5,20 @@ defmodule Arc.Actions.Store do
     end
   end
 
+  @doc """
+  This calls the put/3 to store the file under the named scope.
+
+  File creation is done during function calling.
+  """
   def store(definition, {file, scope}) when is_binary(file) or is_map(file) do
     put(definition, {Arc.File.new(file), scope})
   end
 
+  @doc """
+  Stores file without scope
+
+  This calls the store/2 with a `nil` scope.
+  """
   def store(definition, filepath) when is_binary(filepath) or is_map(filepath) do
     store(definition, {filepath, nil})
   end
@@ -16,6 +26,7 @@ defmodule Arc.Actions.Store do
   #
   # Private
   #
+
 
   defp put(_definition, { error = {:error, _msg}, _scope}), do: error
   defp put(definition, {%Arc.File{}=file, scope}) do

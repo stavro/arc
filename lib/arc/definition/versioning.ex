@@ -2,6 +2,9 @@ defmodule Arc.Definition.Versioning do
   defmacro __using__(_) do
     quote do
       @versions [:original]
+
+      # Invoke Arc.Definition.Versioning.__before_compile__/1 before
+      # the module is compiled.
       @before_compile Arc.Definition.Versioning
     end
   end
