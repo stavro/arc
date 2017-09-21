@@ -7,9 +7,7 @@ defmodule Arc.Processor do
     apply_transformation(file, transform)
   end
 
-  @doc """
-  Apply given transformation, including no transformation
-  """
+  # Apply given transformation, including no transformation
   defp apply_transformation(file, :noaction), do: {:ok, file}
   defp apply_transformation(file, {:noaction}), do: {:ok, file} # Deprecated
   defp apply_transformation(file, {cmd, conversion, _}) do

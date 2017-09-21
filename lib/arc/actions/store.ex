@@ -21,9 +21,7 @@ defmodule Arc.Actions.Store do
     store(definition, {filepath, nil})
   end
 
-  @doc """
-  Validates file and on success call put_versions/2
-  """
+  # Validates file and on success call put_versions/2
   defp put(_definition, { error = {:error, _msg}, _scope}), do: error
   defp put(definition, {%Arc.File{}=file, scope}) do
     case definition.validate({file, scope}) do
@@ -32,9 +30,7 @@ defmodule Arc.Actions.Store do
     end
   end
 
-  @doc """
-  Creates all versions of the given file and calls handle_responses/2
-  """
+  # Creates all versions of the given file and calls handle_responses/2
   defp put_versions(definition, {file, scope}) do
     if definition.async do
       definition.__versions
@@ -48,9 +44,7 @@ defmodule Arc.Actions.Store do
     end
   end
 
-  @doc """
-  Checks if all versions were created successfully
-  """
+  # Checks if all versions were created successfully
   defp handle_responses(responses, filename) do
     errors = 
       Enum.filter(responses, fn(resp) -> elem(resp, 0) == :error end) 
@@ -61,25 +55,20 @@ defmodule Arc.Actions.Store do
     else: {:error, errors}
   end
 
-  @doc """
-  Get timeout configuration from application config or default to 15s
-  """
+  # Get timeout configuration from application config or default to 15s
   defp version_timeout do
     Application.get_env(:arc, :version_timeout) || 15_000
   end
 
-  @doc """
-  A wrapper to generate versions asynchronously
-  """
+  # A wrapper to generate versions asynchronously
   defp async_put_version(definition, version, {file, scope}) do
     Task.async(fn ->
       put_version(definition, version, {file, scope})
     end)
   end
 
-  @doc """
-  Calls Arc.Processor.process/3 to actually generate all versions
-  """
+  # Calls Arc.Processor.process/3 to actually generate all versions and 
+  # place in desired store
   defp put_version(definition, version, {file, scope}) do
     case Arc.Processor.process(definition, version, {file, scope}) do
       {:error, error} -> {:error, error}
