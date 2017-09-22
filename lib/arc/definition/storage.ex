@@ -6,29 +6,46 @@ defmodule Arc.Definition.Storage do
       @async true
 
       @doc """
-      Returns the name of the file with the extension stripped by default
+      Function to replace original filename
+
+      By default, this function returns the name of the uploaded file
+      sans the extension.
       """
-      def filename(_, {file, _}), do: Path.basename(file.file_name, Path.extname(file.file_name))
+      def filename(_version, {file, _scope}), 
+      do: Path.basename(file.file_name, Path.extname(file.file_name))
 
       @doc """
-      Returns "uploads" by default
+      Storage directory to upload the file to
+
+      Be default, this is just "uploads" but you may want to name the directory
+      based on scope and version.
       """
-      def storage_dir(_, _), do: "uploads"
+      def storage_dir(_version, {_file, _scope}), 
+      do: "uploads"
       
       @doc """
-      Returns true by default
+      Validate extension of files
+
+      By default, there is no validation. For better security, it is recommended
+      that you define a custom validation function that whitelists certain 
+      extensions.
       """
-      def validate(_), do: true
+      def validate({_file, _scope}), 
+      do: true
 
       @doc """
-      Returns `default_url(version)` by default
+      Function to return placeholder images
+
+      By default, there is no placeholder images but 
       """
-      def default_url(version, _), do: default_url(version)
+      def default_url(version, _), 
+      do: default_url(version)
 
       @doc """
       Returns nil by default
       """
-      def default_url(_), do: nil
+      def default_url(_), 
+      do: nil
 
       @doc """
       Tries to get :storage configuration or else returns the Storage.S3 module by default
