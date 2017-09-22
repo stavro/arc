@@ -7,10 +7,12 @@ defmodule Arc.Actions.Delete do
     end
   end
 
+  @doc """
+  Deletes file from the given filepath and scope
+  """
   def delete(definition, {filepath, scope}) when is_binary(filepath) do
     do_delete(definition, {%{file_name: filepath}, scope})
   end
-
   def delete(definition, filepath) when is_binary(filepath) do
     do_delete(definition, {%{file_name: filepath}, nil})
   end
@@ -19,10 +21,12 @@ defmodule Arc.Actions.Delete do
   # Private
   #
 
+  # Default timeout for async operations
   defp version_timeout do
     Application.get_env(:arc, :version_timeout) || 15_000
   end
 
+  # Start deleting
   defp do_delete(definition, {file, scope}) do
     if definition.async do
       definition.__versions
@@ -35,10 +39,12 @@ defmodule Arc.Actions.Delete do
     :ok
   end
 
+  # Delete given version asyncronously
   defp async_delete_version(definition, version, {file, scope}) do
     Task.async(fn -> delete_version(definition, version, {file, scope}) end)
   end
 
+  # Delete given version
   defp delete_version(definition, version, {file, scope}) do
     definition.__storage.delete(definition, version, {file, scope})
   end
