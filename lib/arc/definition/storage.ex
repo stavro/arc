@@ -50,7 +50,8 @@ defmodule Arc.Definition.Storage do
       @doc """
       Tries to get :storage configuration or else returns the Storage.S3 module by default
       """
-      def __storage, do: Application.get_env(:arc, :storage, Arc.Storage.S3)
+      def __storage, 
+      do: Application.get_env(:arc, :storage, Arc.Storage.S3)
 
       @doc """
       Allow the user to define his own functions in place of the above
