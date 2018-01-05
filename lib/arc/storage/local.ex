@@ -13,8 +13,8 @@ defmodule Arc.Storage.Local do
     {:ok, file.file_name}
   end
 
-  def url(definition, version, file_and_scope, _options \\ []) do
-    local_path = build_local_path(definition, version, file_and_scope)
+  def url(definition, version, file_and_scope, options \\ []) do
+    local_path = build_local_path(definition, version, file_and_scope, options)
 
     url = if String.starts_with?(local_path, "/") do
       local_path
@@ -26,14 +26,14 @@ defmodule Arc.Storage.Local do
   end
 
   def delete(definition, version, file_and_scope) do
-    build_local_path(definition, version, file_and_scope)
+    build_local_path(definition, version, file_and_scope, [])
     |> File.rm()
   end
 
-  defp build_local_path(definition, version, file_and_scope) do
+  defp build_local_path(definition, version, file_and_scope, options) do
     Path.join([
       definition.storage_dir(version, file_and_scope),
-      Arc.Definition.Versioning.resolve_file_name(definition, version, file_and_scope)
+      Arc.Definition.Versioning.resolve_file_name(definition, version, file_and_scope, options)
     ])
   end
 end
