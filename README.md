@@ -298,7 +298,9 @@ This means it will first look for the AWS standard AWS_ACCESS_KEY_ID and AWS_SEC
 
 ### Storage Directory
 
-The storage directory defaults to "uploads", but is recommended to configure based on your intended usage.  A common pattern for user profile pictures is to store each user's uploaded images in a separate subdirectory based on their primary key:
+**Configuration Option**
+
+* `arc[:storage_dir]` - The storage directory to place files. Defaults to `uploads`, and can be overridden by each uploader. A common pattern for user profile pictures is to store each user's uploaded images in a separate subdirectory based on their primary key:
 
 ```elixir
 def storage_dir(version, {file, scope}) do
