@@ -1,6 +1,7 @@
 defmodule ArcTest.Storage.Local do
   use ExUnit.Case
   @img "test/support/image.png"
+  @badimg "test/support/invalid_image.png"
 
   setup_all do
     File.mkdir_p("arctest/uploads")
@@ -12,6 +13,7 @@ defmodule ArcTest.Storage.Local do
 
 
   defmodule DummyDefinition do
+    use Arc.Actions.Store
     use Arc.Definition.Storage
     use Arc.Actions.Url
     use Arc.Definition.Storage
@@ -49,5 +51,15 @@ defmodule ArcTest.Storage.Local do
   test "encoded url" do
     url = Arc.Storage.Local.url(DummyDefinition, :original, {Arc.File.new(%{binary: "binary", filename: "binary file.png"}), nil})
     assert "/arctest/uploads/original-binary%20file.png" == url
+  end
+
+  test "if one transform fails, they all fail" do
+    filepath = @badimg
+    [filename] = String.split(@img, "/") |> Enum.reverse |> Enum.take(1)
+    assert File.exists?(filepath)
+    DummyDefinition.store(filepath)
+
+    assert !File.exists?("arctest/uploads/original-#{filename}")
+    assert !File.exists?("arctest/uploads/1/thumb-#{filename}")
   end
 end
