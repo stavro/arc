@@ -2,6 +2,7 @@ defmodule ArcTest.Storage.S3 do
   use ExUnit.Case, async: false
 
   @img "test/support/image.png"
+  @img_with_space "test/support/image two.png"
 
   defmodule DummyDefinition do
     use Arc.Definition
@@ -38,7 +39,7 @@ defmodule ArcTest.Storage.S3 do
     quote bind_quoted: [definition: definition, args: args] do
       :ok = definition.delete(args)
       signed_url = DummyDefinition.url(args, signed: true)
-      {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_char_list(signed_url))
+      {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_charlist(signed_url))
       assert 404 == code
       assert 'Not Found' == msg
     end
@@ -47,11 +48,11 @@ defmodule ArcTest.Storage.S3 do
   defmacro assert_header(definition, args, header, value) do
     quote bind_quoted: [definition: definition, args: args, header: header, value: value] do
       url = definition.url(args)
-      {:ok, {{_, 200, 'OK'}, headers, _}} = :httpc.request(to_char_list(url))
+      {:ok, {{_, 200, 'OK'}, headers, _}} = :httpc.request(to_charlist(url))
 
-      char_header = to_char_list(header)
+      char_header = to_charlist(header)
 
-      assert to_char_list(value) == Enum.find_value(headers, fn(
+      assert to_charlist(value) == Enum.find_value(headers, fn(
         {^char_header, value}) -> value
         _ -> nil
       end)
@@ -61,12 +62,12 @@ defmodule ArcTest.Storage.S3 do
   defmacro assert_private(definition, args) do
     quote bind_quoted: [definition: definition, args: args] do
       unsigned_url = definition.url(args)
-      {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_char_list(unsigned_url))
+      {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_charlist(unsigned_url))
       assert code == 403
       assert msg == 'Forbidden'
 
       signed_url = definition.url(args, signed: true)
-      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_char_list(signed_url))
+      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_charlist(signed_url))
       assert code == 200
       assert msg == 'OK'
     end
@@ -75,7 +76,7 @@ defmodule ArcTest.Storage.S3 do
   defmacro assert_public(definition, args) do
     quote bind_quoted: [definition: definition, args: args] do
       url = definition.url(args)
-      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_char_list(url))
+      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_charlist(url))
       assert code == 200
       assert msg == 'OK'
     end
@@ -84,7 +85,7 @@ defmodule ArcTest.Storage.S3 do
   defmacro assert_public_with_extension(definition, args, version, extension) do
     quote bind_quoted: [definition: definition, version: version, args: args, extension: extension] do
       url = definition.url(args, version)
-      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_char_list(url))
+      {:ok, {{_, code, msg}, headers, _}} = :httpc.request(to_charlist(url))
       assert code == 200
       assert msg == 'OK'
       assert Path.extname(url) == extension

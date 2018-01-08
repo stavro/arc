@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.0 (In Progress)
+  * (Enhancement) Allow overriding the `storage_dir` via configuration
+  * (Enhancement) Skip uploading all files if any of the versions fail (PR: https://github.com/stavro/arc/pull/218)
+
 ## v0.8.0 (2017-04-20)
   * (Enhancement) Fix elixir warnings.
   * (Enhancement) Allow delete/1 to be overridden.

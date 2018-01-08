@@ -5,7 +5,7 @@ defmodule Arc.Definition.Storage do
       @async true
 
       def filename(_, {file, _}), do: Path.basename(file.file_name, Path.extname(file.file_name))
-      def storage_dir(_, _), do: "uploads"
+      def storage_dir(_, _), do: Application.get_env(:arc, :storage_dir, "uploads")
       def validate(_), do: true
       def default_url(version, _), do: default_url(version)
       def default_url(_), do: nil
