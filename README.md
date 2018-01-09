@@ -7,6 +7,32 @@ Arc is a flexible file upload library for Elixir with straightforward integratio
 
 Browse the readme below, or jump to [a full example](#full-example).
 
+## Content
+
+- [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Storage Providers](#storage-providers)
+  - [Usage with Ecto](#usage-with-ecto)
+- [Getting Started](#getting-started-defining-your-upload)
+  - [Basics](#basics)
+  - [Transformations](#transformations)
+    - [ImageMagick Transformations](#imagemagick-transformations)
+    - [FFmpeg Transformations](#ffmpeg-transformations)
+    - [Complex Transformations](#complex-transformations)
+  - [Asynchronous File Uploading](#asynchronous-file-uploading)
+  - [Storage of Files](#storage-of-files)
+    - [Local Configuration](#local-configuration)
+    - [S3 Configuration](#s3-configuration)
+    - [Storage Directory](#storage-directory)
+    - [Access Control Permissions](#access-control-permissions)
+    - [S3 Object Headers](#s3-object-headers)
+    - [File Validation](#file-validation)
+    - [File Names](#file-names)
+  - [Object Deletion](#object-deletion)
+  - [URL Generation](#url-generation)
+    - [Alternate S3 configuration example](#alternate-s3-configuration-example)
+- [Full example](#full-example)
+
 ## Installation
 
 Add the latest stable release to your `mix.exs` file, along with the required dependencies for `ExAws` if appropriate:
