@@ -393,7 +393,7 @@ As an example, to explicitly specify the content-type of an object, you may defi
 
 ```elixir
 def s3_object_headers(version, {file, scope}) do
-  [content_type: Plug.MIME.path(file.file_name)] # for "image.png", would produce: "image/png"
+  [content_type: MIME.from_path(file.file_name)] # for "image.png", would produce: "image/png"
 end
 ```
 
