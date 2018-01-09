@@ -301,7 +301,14 @@ This means it will first look for the AWS standard AWS_ACCESS_KEY_ID and AWS_SEC
 
 **Configuration Option**
 
-* `arc[:storage_dir]` - The storage directory to place files. Defaults to `uploads`, and can be overridden by each uploader. A common pattern for user profile pictures is to store each user's uploaded images in a separate subdirectory based on their primary key:
+* `arc[:storage_dir]` - The storage directory to place files. Defaults to `uploads`, but can be overwritten via configuration options `:storage_dir`
+
+```elixir
+config :arc,
+  storage_dir: "my/dir"
+```
+
+The storage dir can also be overwritten on an individual basis, in each separate definition. A common pattern for user profile pictures is to store each user's uploaded images in a separate subdirectory based on their primary key:
 
 ```elixir
 def storage_dir(version, {file, scope}) do
