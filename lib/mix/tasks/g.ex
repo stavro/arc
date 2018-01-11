@@ -28,7 +28,8 @@ defmodule Mix.Tasks.Arc do
     def run([model_name]) do
       app_name = Mix.Project.config[:app]
       if (File.exists?("lib/#{app_name}_web/")) do
-        run([model_name, nil])
+        project_module_name = camelize(to_string(app_name))
+        generate_phx_uploader_file(model_name, project_module_name)
       else
         raise "path must be passed when generating an uploader."
       end
@@ -37,10 +38,7 @@ defmodule Mix.Tasks.Arc do
     def run([model_name, path]) do
       app_name = Mix.Project.config[:app]
       project_module_name = camelize(to_string(app_name))
-      case path do
-        nil -> generate_phx_uploader_file(model_name, project_module_name)
-        _anything_else ->  generate_uploader_file(model_name, project_module_name, path)
-      end
+      generate_uploader_file(model_name, project_module_name, path)
     end
 
     def run(_) do
