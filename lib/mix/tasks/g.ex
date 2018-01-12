@@ -46,6 +46,11 @@ defmodule Mix.Tasks.Arc do
       # To add a thumbnail version:
       # @versions [:original, :thumb]
 
+      # Override the bucket on a per definition basis:
+      # def bucket do
+      #   :custom_bucket_name
+      # end
+
       # Whitelist file extensions:
       # def validate({file, _}) do
       #   ~w(.jpg .jpeg .gif .png) |> Enum.member?(Path.extname(file.file_name))
