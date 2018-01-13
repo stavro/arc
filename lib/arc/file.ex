@@ -1,9 +1,8 @@
 defmodule Arc.File do
   defstruct [:path, :file_name, :binary]
 
-  def generate_temporary_path(file \\ nil) do
-    extension = Path.extname((file && file.path) || "")
-
+  def generate_temporary_path(file \\ nil, ext \\ nil) do
+    extension = ext || Path.extname((file && file.path) || "")
     file_name =
       :crypto.strong_rand_bytes(20)
       |> Base.encode32()

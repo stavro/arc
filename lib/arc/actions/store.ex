@@ -49,8 +49,44 @@ defmodule Arc.Actions.Store do
   end
 
   defp handle_responses(responses, filename) do
-    errors = Enum.filter(responses, fn(resp) -> elem(resp, 0) == :error end) |> Enum.map(fn(err) -> elem(err, 1) end)
-    if Enum.empty?(errors), do: {:ok, filename}, else: {:error, errors}
+    errors = find_errors_in(responses)
+    case Enum.empty?(errors) do
+      true -> {:ok, filename, find_versions_in(responses)}
+      false -> {:error, errors}
+    end
+  end
+
+  defp extract_version_name(result) do
+    case result do
+      {:ok, version_name} -> version_name
+      _ -> nil
+      end
+  end
+
+  defp find_versions_in(responses) do
+    responses
+    |> List.flatten
+    |> Enum.map(fn(response) -> extract_version_name(response) end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq
+    |> Enum.join("::")
+  end
+
+  defp find_errors_in(responses) do
+    case is_list(responses) do
+      true -> responses
+              |> List.flatten
+              |> Enum.map(fn(resp) ->check_for_errors(resp) end)
+              |> Enum.reject(&is_nil/1)
+      false ->check_for_errors(responses)
+    end
+  end
+
+  defp check_for_errors(result) do
+    case result do
+      {:error, message } ->  message
+      {:ok, _} -> nil
+    end
   end
 
   defp version_timeout do
