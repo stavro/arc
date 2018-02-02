@@ -24,6 +24,7 @@ Browse the readme below, or jump to [a full example](#full-example).
     - [Local Configuration](#local-configuration)
     - [S3 Configuration](#s3-configuration)
     - [Storage Directory](#storage-directory)
+    - [Specify multiple buckets](#specify-multiple-buckets)
     - [Access Control Permissions](#access-control-permissions)
     - [S3 Object Headers](#s3-object-headers)
     - [File Validation](#file-validation)
