@@ -36,7 +36,7 @@ defmodule Arc.Mixfile do
     ]
   end
 
-  def applications(:test), do: [:ex_aws, :poison]
+  def applications(:test), do: [:ex_aws, :ex_aws_s3, :poison]
   def applications(_), do: []
 
   defp deps do
