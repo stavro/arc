@@ -16,7 +16,6 @@ defmodule ArcTest.Storage.Local do
     use Arc.Actions.Store
     use Arc.Definition.Storage
     use Arc.Actions.Url
-    use Arc.Definition.Storage
 
     @acl :public_read
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
