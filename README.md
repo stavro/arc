@@ -25,6 +25,7 @@ Browse the readme below, or jump to [a full example](#full-example).
     - [S3 Configuration](#s3-configuration)
     - [Storage Directory](#storage-directory)
     - [Specify multiple buckets](#specify-multiple-buckets)
+    - [Specify multiple asset hosts](#specify-multiple-asset-hosts)
     - [Access Control Permissions](#access-control-permissions)
     - [S3 Object Headers](#s3-object-headers)
     - [File Validation](#file-validation)
@@ -337,12 +338,22 @@ end
 
 ### Specify multiple buckets
 
-Arc lets you specify a bucket on a per defintion basis. In case you want to use
+Arc lets you specify a bucket on a per definition basis. In case you want to use
 multiple buckets, you can specify a bucket in the uploader definition file
 like this:
 
 ```elixir
 def bucket, do: :some_custom_bucket_name
+```
+
+### Specify multiple asset hosts
+
+Arc lets you specify an asset host on a per definition basis. In case you want to use
+multiple hosts, you can specify an asset_host in the uploader definition file
+like this:
+
+```elixir
+def asset_host, do: "https://example.com"
 ```
 
 ### Access Control Permissions
