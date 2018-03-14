@@ -8,8 +8,9 @@ defmodule ArcTest.Actions.Store do
     use Arc.Definition.Storage
 
     def validate({file, _}), do: String.ends_with?(file.file_name, ".png") || String.ends_with?(file.file_name, ".ico")
+    def transform(:skipped, _), do: :skip
     def transform(_, _), do: :noaction
-    def __versions, do: [:original, :thumb]
+    def __versions, do: [:original, :thumb, :skipped]
   end
 
   test "checks file existance" do

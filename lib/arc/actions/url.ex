@@ -42,6 +42,10 @@ defmodule Arc.Actions.Url do
   end
 
   defp build(definition, version, file_and_scope, options) do
-    definition.__storage.url(definition, version, file_and_scope, options)
+    case Arc.Definition.Versioning.resolve_file_name(definition, version, file_and_scope) do
+      nil -> nil
+      _ ->
+        definition.__storage.url(definition, version, file_and_scope, options)
+    end
   end
 end
