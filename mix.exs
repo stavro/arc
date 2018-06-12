@@ -42,11 +42,12 @@ defmodule Arc.Mixfile do
   defp deps do
     [
       {:httpoison, "~> 0.11"}, # Required for downloading remote files
-      {:ex_aws, "~> 1.1", optional: true},
+      {:ex_aws, "~> 2.0", optional: true},
       {:mock, "~> 0.1", only: :test},
       {:ex_doc, "~> 0.14", only: :dev},
 
       # If using Amazon S3:
+      {:ex_aws_s3, "~> 2.0", optional: true},
       {:poison, "~> 2.2 or ~> 3.1", optional: true},
       {:sweet_xml, "~> 0.6", optional: true}
     ]
