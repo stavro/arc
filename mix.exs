@@ -36,13 +36,14 @@ defmodule Arc.Mixfile do
     ]
   end
 
-  def applications(:test), do: [:ex_aws, :poison]
+  def applications(:test), do: [:ex_aws, :ex_aws_s3, :poison]
   def applications(_), do: []
 
   defp deps do
     [
-      {:httpoison, "~> 0.11"}, # Required for downloading remote files
-      {:ex_aws, "~> 1.1", optional: true},
+      {:httpoison, "~> 0.13"}, # Required for downloading remote files
+      {:ex_aws, "~> 2.0", optional: true},
+      {:ex_aws_s3, "~> 2.0", optional: true},
       {:mock, "~> 0.1", only: :test},
       {:ex_doc, "~> 0.14", only: :dev},
 

@@ -44,8 +44,10 @@ defp deps do
     arc: "~> 0.9.0",
 
     # If using Amazon S3:
-    ex_aws: "~> 1.1",
+    ex_aws: "~> 2.0",
+    ex_aws_s3: "~> 2.0",
     hackney: "~> 1.6",
+    httpoison: "~> 0.13",
     poison: "~> 3.1",
     sweet_xml: "~> 0.6"
   ]
