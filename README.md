@@ -41,7 +41,7 @@ Add the latest stable release to your `mix.exs` file, along with the required de
 ```elixir
 defp deps do
   [
-    arc: "~> 0.9.0",
+    arc: "~> 0.10.0",
 
     # If using Amazon S3:
     ex_aws: "~> 2.0",
@@ -50,21 +50,6 @@ defp deps do
     httpoison: "~> 0.13",
     poison: "~> 3.1",
     sweet_xml: "~> 0.6"
-  ]
-end
-```
-
-If you plan on using Amazon's S3 Storage, you must also add `ex_aws`, `hackney`, and `poison` as startup dependencies your application's `mix.exs` file:
-
-```elixir
-def application do
-  [
-    mod: { MyApp, [] },
-    applications: [
-      :ex_aws,
-      :hackney,
-      :poison
-    ]
   ]
 end
 ```
