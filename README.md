@@ -24,6 +24,7 @@ Browse the readme below, or jump to [a full example](#full-example).
     - [Local Configuration](#local-configuration)
     - [S3 Configuration](#s3-configuration)
     - [Storage Directory](#storage-directory)
+    - [Specify multiple buckets](#specify-multiple-buckets)
     - [Access Control Permissions](#access-control-permissions)
     - [S3 Object Headers](#s3-object-headers)
     - [File Validation](#file-validation)
@@ -40,28 +41,15 @@ Add the latest stable release to your `mix.exs` file, along with the required de
 ```elixir
 defp deps do
   [
-    arc: "~> 0.8.0",
+    arc: "~> 0.10.0",
 
     # If using Amazon S3:
-    ex_aws: "~> 1.1",
+    ex_aws: "~> 2.0",
+    ex_aws_s3: "~> 2.0",
     hackney: "~> 1.6",
+    httpoison: "~> 0.13",
     poison: "~> 3.1",
     sweet_xml: "~> 0.6"
-  ]
-end
-```
-
-If you plan on using Amazon's S3 Storage, you must also add `ex_aws`, `hackney`, and `poison` as startup dependencies your application's `mix.exs` file:
-
-```elixir
-def application do
-  [
-    mod: { MyApp, [] },
-    applications: [
-      :ex_aws,
-      :hackney,
-      :poison
-    ]
   ]
 end
 ```

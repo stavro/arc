@@ -1,7 +1,7 @@
 defmodule Arc.Mixfile do
   use Mix.Project
 
-  @version "0.8.0"
+  @version "0.10.0"
 
   def project do
     [app: :arc,
@@ -36,19 +36,24 @@ defmodule Arc.Mixfile do
     ]
   end
 
-  def applications(:test), do: [:ex_aws, :poison]
+  def applications(:test), do: [:ex_aws, :ex_aws_s3, :poison]
   def applications(_), do: []
 
   defp deps do
     [
-      {:httpoison, "~> 0.11"}, # Required for downloading remote files
-      {:ex_aws, "~> 1.1", optional: true},
-      {:mock, "~> 0.1", only: :test},
-      {:ex_doc, "~> 0.14", only: :dev},
+      {:httpoison, "~> 0.13"}, # Required for downloading remote files
 
-      # If using Amazon S3:
+      # If using Amazon S3
+      {:ex_aws, "~> 2.0", optional: true},
+      {:ex_aws_s3, "~> 2.0", optional: true},
       {:poison, "~> 2.2 or ~> 3.1", optional: true},
-      {:sweet_xml, "~> 0.6", optional: true}
+      {:sweet_xml, "~> 0.6", optional: true},
+
+      # Test
+      {:mock, "~> 0.1", only: :test},
+
+      # Dev
+      {:ex_doc, "~> 0.14", only: :dev}
     ]
   end
 end

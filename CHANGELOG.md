@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.9.0 (In Progress)
+## v0.10.0 (2018-06-19)
+  * (Dependency) `:ex_aws` increased to `~> 2.0`
+  * (Dependency) `:ex_aws_s3` added at `~> 2.0`
+
+## v0.9.0 (2018-06-19)
   * (Enhancement) Allow overriding the destination bucket in an upload definition. See (https://github.com/stavro/arc/pull/206)
   * (Enhancement) Allow overriding the `storage_dir` via configuration
   * (Enhancement) Skip uploading all files if any of the versions fail (PR: https://github.com/stavro/arc/pull/218)
