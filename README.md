@@ -130,7 +130,7 @@ Example usage as general file store:
 Avatar.store("/path/to/my/file.png") #=> {:ok, "file.png"}
 
 # Store any remotely accessible file
-Avatar.store("http://example.com/image.png") #=> {:ok, "file.png"}
+Avatar.store("http://example.com/file.png") #=> {:ok, "file.png"}
 
 # Store a file directly from a `%Plug.Upload{}`
 Avatar.store(%Plug.Upload{filename: "file.png", path: "/a/b/c"}) #=> {:ok, "file.png"}
@@ -444,13 +444,18 @@ Example:
 
 ```elixir
 # Without a scope:
-{:ok, path} = DummyDefinition.store("/Images/me.png")
-:ok = DummyDefinition.delete(path)
+{:ok, original_filename} = Avatar.store("/Images/me.png")
+:ok = Avatar.delete(original_filename)
 
 # With a scope:
 user = Repo.get! User, 1
-{:ok, path} = DummyDefinition.store({"/Images/me.png", user})
-:ok = DummyDefinition.delete({path, user})
+{:ok, original_filename} = Avatar.store({"/Images/me.png", user})
+:ok = Avatar.delete({original_filename, user})
+# or
+user = Repo.get!(User, 1)
+{:ok, original_filename} = Avatar.store({"/Images/me.png", user})
+user = Repo.get!(User, 1)
+:ok = Avatar.delete({user.avatar.file_name, user})
 ```
 
 ## Url Generation
