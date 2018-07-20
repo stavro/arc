@@ -455,7 +455,7 @@ user = Repo.get! User, 1
 user = Repo.get!(User, 1)
 {:ok, original_filename} = Avatar.store({"/Images/me.png", user})
 user = Repo.get!(User, 1)
-:ok = Avatar.delete({user.avatar.file_name, user})
+:ok = Avatar.delete({user.avatar, user})
 ```
 
 ## Url Generation
