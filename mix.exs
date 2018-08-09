@@ -41,7 +41,7 @@ defmodule Arc.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 0.13"}, # Required for downloading remote files
+      {:httpoison, "~> 1.2"}, # Required for downloading remote files
 
       # If using Amazon S3
       {:ex_aws, "~> 2.0", optional: true},
