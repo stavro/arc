@@ -91,12 +91,13 @@ end
       backoff_factor: Application.get_env(:arc, :backoff_factor, 1000),
       backoff_max: Application.get_env(:arc, :backoff_max, 30_000),
     ]
+
     request(remote_path, options)
   end
 
   defp request(remote_path, options, tries \\ 0) do
-    case HTTPoison.get(remote_path, [], options) do
-      {:ok, %{status_code: 200, body: body}} -> {:ok, body}
+    case :hackney.get(URI.to_string(remote_path), [], "", options) do
+      {:ok, 200, _headers, client_ref} -> :hackney.body(client_ref)
       {:error, %{reason: :timeout}} ->
         case retry(tries, options) do
           {:ok, :retry} -> request(remote_path, options, tries + 1)
