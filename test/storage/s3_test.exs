@@ -98,7 +98,7 @@ defmodule ArcTest.Storage.S3 do
   end
 
   setup_all do
-    Application.ensure_all_started(:httpoison)
+    Application.ensure_all_started(:hackney)
     Application.ensure_all_started(:ex_aws)
     Application.put_env :arc, :virtual_host, false
     Application.put_env :arc, :bucket, { :system, "ARC_TEST_BUCKET" }

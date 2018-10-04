@@ -31,7 +31,7 @@ defmodule Arc.Mixfile do
     [
       applications: [
         :logger,
-        :httpoison,
+        :hackney,
       ] ++ applications(Mix.env)
     ]
   end
@@ -41,7 +41,7 @@ defmodule Arc.Mixfile do
 
   defp deps do
     [
-      {:httpoison, "~> 0.13"}, # Required for downloading remote files
+      {:hackney, "~> 1.0"},
 
       # If using Amazon S3
       {:ex_aws, "~> 2.0", optional: true},
