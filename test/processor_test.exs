@@ -12,6 +12,7 @@ defmodule ArcTest.Processor do
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
     def transform(:med, _), do: {:convert, fn(input, output) -> " #{input} -strip -thumbnail 10x10 #{output}" end, :jpg}
     def transform(:small, _), do: {:convert, fn(input, output) -> [input, "-strip", "-thumbnail", "10x10", output] end, :jpg}
+    def transform(:skipped, _), do: :skip
     def __versions, do: [:original, :thumb]
   end
 
@@ -34,6 +35,10 @@ defmodule ArcTest.Processor do
   test "returns the original path for :noaction transformations" do
     {:ok, file} = Arc.Processor.process(DummyDefinition, :original, {Arc.File.new(@img), nil})
     assert file.path == @img
+  end
+
+  test "returns nil for :skip transformations" do
+    assert {:ok, nil} = Arc.Processor.process(DummyDefinition, :skipped, {Arc.File.new(@img), nil})
   end
 
   test "transforms a copied version of file according to the specified transformation" do

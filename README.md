@@ -158,6 +158,7 @@ To transform an image, the definition module must define a `transform/2` functio
 
 This transform handler accepts the version atom, as well as the file/scope argument, and is responsible for returning one of the following:
   * `:noaction` - The original file will be stored as-is.
+  * `:skip` - Nothing will be stored for the provided version.
   * `{executable, args}` - The `executable` will be called with `System.cmd` with the format `#{original_file_path} #{args} #{transformed_file_path}`.
   * `{executable, fn(input, output) -> args end}` - If your executable expects arguments in a format other than the above, you may supply a function to the conversion tuple which will be invoked to generate the arguments. The arguments can be returned as a string (e.g. – `" #{input} -strip -thumbnail 10x10 #{output}"`) or a list (e.g. – `[input, "-strip", "-thumbnail", "10x10", output]`) for even more control.
   * `{executable, args, output_extension}` - If your transformation changes the file extension (eg, converting to `png`), then the new file extension must be explicit.
@@ -166,7 +167,7 @@ This transform handler accepts the version atom, as well as the file/scope argum
 
 As images are one of the most commonly uploaded filetypes, Arc has a recommended integration with ImageMagick's `convert` tool for manipulation of images.  Each upload definition may specify as many versions as desired, along with the corresponding transformation for each version.
 
-The expected return value of a `transform` function call must either be `:noaction`, in which case the original file will be stored as-is, or `{:convert, transformation}` in which the original file will be processed via ImageMagick's `convert` tool with the corresponding transformation parameters.
+The expected return value of a `transform` function call must either be `:noaction`, in which case the original file will be stored as-is, `:skip`, in which case nothing will be stored, or `{:convert, transformation}` in which the original file will be processed via ImageMagick's `convert` tool with the corresponding transformation parameters.
 
 The following example stores the original file, as well as a squared 100x100 thumbnail version which is stripped of comments (eg, GPS coordinates):
 
@@ -417,7 +418,7 @@ defmodule Avatar do
   use Arc.Definition
   @extension_whitelist ~w(.jpg .jpeg .gif .png)
 
-  def validate({file, _}) do   
+  def validate({file, _}) do
     file_extension = file.file_name |> Path.extname() |> String.downcase()
     Enum.member?(@extension_whitelist, file_extension)
   end
@@ -567,7 +568,7 @@ defmodule Avatar do
 
   def acl(:thumb, _), do: :public_read
 
-  def validate({file, _}) do   
+  def validate({file, _}) do
     file_extension = file.file_name |> Path.extname |> String.downcase
     Enum.member?(@extension_whitelist, file_extension)
   end

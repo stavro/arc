@@ -11,6 +11,7 @@ defmodule Arc.Definition.Versioning do
     conversion = definition.transform(version, {file, scope})
 
     case conversion do
+      :skip       -> nil
       {_, _, ext} -> "#{name}.#{ext}"
        _          -> "#{name}#{Path.extname(file.file_name)}"
     end

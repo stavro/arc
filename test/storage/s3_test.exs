@@ -25,6 +25,14 @@ defmodule ArcTest.Storage.S3 do
     end
   end
 
+  defmodule DefinitionWithSkipped do
+    use Arc.Definition
+    @versions [:skipped]
+    @acl :public_read
+
+    def transform(:skipped, _), do: :skip
+  end
+
   defmodule DefinitionWithScope do
     use Arc.Definition
     @acl :public_read
@@ -242,5 +250,11 @@ defmodule ArcTest.Storage.S3 do
     assert {:ok, "image.png"} == DefinitionWithThumbnail.store(@img)
     assert_public_with_extension(DefinitionWithThumbnail, "image.png", :thumb, ".jpg")
     delete_and_assert_not_found(DefinitionWithThumbnail, "image.png")
+  end
+
+  @tag :s3
+  @tag timeout: 150000
+  test "url for a skipped version" do
+    assert nil == DefinitionWithSkipped.url("image.png")
   end
 end
