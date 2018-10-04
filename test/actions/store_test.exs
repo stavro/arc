@@ -12,6 +12,15 @@ defmodule ArcTest.Actions.Store do
     def __versions, do: [:original, :thumb]
   end
 
+  defmodule SkipFileDummyDefinition do
+    use Arc.Actions.Store
+    use Arc.Definition.Storage
+
+    def validate(_), do: true
+    def transform(_, _), do: :skip
+    def __versions, do: [:original, :thumb]
+  end
+
   test "checks file existance" do
     assert DummyDefinition.store("non-existant-file.png") == {:error, :invalid_file_path}
   end
@@ -49,6 +58,12 @@ defmodule ArcTest.Actions.Store do
       assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:error, [{:http_error, 404, "XML"}, {:http_error, 404, "XML"}]}
     end
   end
+
+   test "skip file does not try to store it" do
+      with_mock Arc.Storage.S3, [put: fn(SkipFileDummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope}) -> {:error, {:http_error, 404, "XML"}} end] do
+        assert SkipFileDummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) == {:ok, "image.png"}
+      end
+    end
 
   test "timeout" do
     Application.put_env :arc, :version_timeout, 1

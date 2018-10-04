@@ -76,6 +76,7 @@ defmodule Arc.Actions.Store do
   defp put_version(definition, version, {result, scope}) do
     case result do
       {:error, error} -> {:error, error}
+      {:skip} -> {:skip}
       {:ok, file} ->
         file_name = Arc.Definition.Versioning.resolve_file_name(definition, version, {file, scope})
         file      = %Arc.File{file | file_name: file_name}
