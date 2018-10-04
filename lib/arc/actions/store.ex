@@ -44,7 +44,7 @@ defmodule Arc.Actions.Store do
   end
 
   defp ensure_all_success(responses) do
-    errors = Enum.filter(responses, fn({_, resp}) -> elem(resp, 0) == :error end)
+    errors = Enum.filter(responses, fn({_version, resp}) -> elem(resp, 0) == :error end)
     if Enum.empty?(errors), do: responses, else: errors
   end
 

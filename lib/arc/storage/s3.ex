@@ -6,6 +6,7 @@ defmodule Arc.Storage.S3 do
     destination_dir = definition.storage_dir(version, {file, scope})
     s3_bucket = s3_bucket(definition)
     s3_key = Path.join(destination_dir, file.file_name)
+    asset_host = asset_host(definition)
     acl = definition.acl(version, {file, scope})
 
     s3_options =
@@ -93,11 +94,17 @@ defmodule Arc.Storage.S3 do
   end
 
   defp host(definition) do
-    host_url = Application.get_env(:arc, :asset_host, default_host((definition)))
-
-    case host_url do
+    case asset_host(definition) do
       {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
       url -> url
+    end
+  end
+
+  defp asset_host(definition) do
+    case definition.asset_host() do
+      false -> default_host(definition)
+      nil -> default_host(definition)
+      host -> host
     end
   end
 

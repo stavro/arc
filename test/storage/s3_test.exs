@@ -41,7 +41,12 @@ defmodule ArcTest.Storage.S3 do
 
   defmodule DefinitionWithBucket do
     use Arc.Definition
-    def bucket, do: :custom_bucket_name
+    def bucket, do: System.get_env("ARC_TEST_BUCKET")
+  end
+
+  defmodule DefinitionWithAssetHost do
+    use Arc.Definition
+    def asset_host, do: "https://example.com"
   end
 
   def env_bucket do
@@ -53,8 +58,11 @@ defmodule ArcTest.Storage.S3 do
       :ok = definition.delete(args)
       signed_url = DummyDefinition.url(args, signed: true)
       {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_charlist(signed_url))
-      assert 404 == code
-      assert 'Not Found' == msg
+
+      # If buckets aren't configured to be public at bucket-level,
+      # deleted objects may return 403 Forbidden instead of 404 Not Found,
+      # even with a signed url
+      assert code in [403, 404]
     end
   end
 
@@ -106,7 +114,7 @@ defmodule ArcTest.Storage.S3 do
   end
 
   setup_all do
-    Application.ensure_all_started(:httpoison)
+    Application.ensure_all_started(:hackney)
     Application.ensure_all_started(:ex_aws)
     Application.put_env :arc, :virtual_host, false
     Application.put_env :arc, :bucket, { :system, "ARC_TEST_BUCKET" }
@@ -154,6 +162,18 @@ defmodule ArcTest.Storage.S3 do
       System.put_env("ARC_ASSET_HOST", custom_asset_host)
       assert "#{custom_asset_host}/arctest/uploads/image.png" == DummyDefinition.url(@img)
     end
+
+    with_env :arc, :asset_host, false, fn ->
+      assert "https://s3.amazonaws.com/#{env_bucket()}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    end
+  end
+
+  @tag :s3
+  @tag timeout: 150000
+  test "custom asset_host in definition" do
+    custom_asset_host = "https://example.com"
+
+    assert "#{custom_asset_host}/uploads/image.png" == DefinitionWithAssetHost.url(@img)
   end
 
   @tag :s3
@@ -209,10 +229,9 @@ defmodule ArcTest.Storage.S3 do
   @tag :s3
   @tag timeout: 150000
   test "with bucket" do
-    url = "https://s3.amazonaws.com/custom_bucket_name/uploads/image.png"
+    url = "https://s3.amazonaws.com/#{env_bucket()}/uploads/image.png"
     assert url == DefinitionWithBucket.url("test/support/image.png")
-    {:ok, path} = DefinitionWithBucket.store("test/support/image.png")
-    assert url == path
+    assert {:ok, "image.png"} == DefinitionWithBucket.store("test/support/image.png")
     delete_and_assert_not_found(DefinitionWithBucket, "test/support/image.png")
   end
 

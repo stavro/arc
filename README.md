@@ -25,6 +25,7 @@ Browse the readme below, or jump to [a full example](#full-example).
     - [S3 Configuration](#s3-configuration)
     - [Storage Directory](#storage-directory)
     - [Specify multiple buckets](#specify-multiple-buckets)
+    - [Specify multiple asset hosts](#specify-multiple-asset-hosts)
     - [Access Control Permissions](#access-control-permissions)
     - [S3 Object Headers](#s3-object-headers)
     - [File Validation](#file-validation)
@@ -41,28 +42,14 @@ Add the latest stable release to your `mix.exs` file, along with the required de
 ```elixir
 defp deps do
   [
-    arc: "~> 0.8.0",
+    arc: "~> 0.10.0",
 
     # If using Amazon S3:
-    ex_aws: "~> 1.1",
+    ex_aws: "~> 2.0",
+    ex_aws_s3: "~> 2.0",
     hackney: "~> 1.6",
     poison: "~> 3.1",
     sweet_xml: "~> 0.6"
-  ]
-end
-```
-
-If you plan on using Amazon's S3 Storage, you must also add `ex_aws`, `hackney`, and `poison` as startup dependencies your application's `mix.exs` file:
-
-```elixir
-def application do
-  [
-    mod: { MyApp, [] },
-    applications: [
-      :ex_aws,
-      :hackney,
-      :poison
-    ]
   ]
 end
 ```
@@ -88,6 +75,7 @@ Arc ships with integrations for Local Storage and S3.  Alternative storage provi
 * **Manta** - https://github.com/onyxrev/arc_manta
 * **OVH** - https://github.com/stephenmoloney/arc_ovh
 * **Google Cloud Storage** - https://github.com/martide/arc_gcs
+* **Microsoft Azure Storage** - https://github.com/phil-a/arc_azure
 
 ### Usage with Ecto
 
@@ -143,7 +131,7 @@ Example usage as general file store:
 Avatar.store("/path/to/my/file.png") #=> {:ok, "file.png"}
 
 # Store any remotely accessible file
-Avatar.store("http://example.com/image.png") #=> {:ok, "file.png"}
+Avatar.store("http://example.com/file.png") #=> {:ok, "file.png"}
 
 # Store a file directly from a `%Plug.Upload{}`
 Avatar.store(%Plug.Upload{filename: "file.png", path: "/a/b/c"}) #=> {:ok, "file.png"}
@@ -243,7 +231,7 @@ function convert {
         --headless \
         --convert-to html \
         --outdir $TMPDIR \
-        $1
+        "$1"
 }
 
 function filter_new_file_name {
@@ -252,9 +240,9 @@ function filter_new_file_name {
     | awk -F/ '{print $2}'
 }
 
-converted_file_name=$(convert $1 | filter_new_file_name)
+converted_file_name=$(convert "$1" | filter_new_file_name)
 
-cp $TMPDIR/$converted_file_name $2
+cp $TMPDIR/$converted_file_name "$2"
 rm $TMPDIR/$converted_file_name
 ```
 
@@ -351,12 +339,22 @@ end
 
 ### Specify multiple buckets
 
-Arc lets you specify a bucket on a per defintion basis. In case you want to use
+Arc lets you specify a bucket on a per definition basis. In case you want to use
 multiple buckets, you can specify a bucket in the uploader definition file
 like this:
 
 ```elixir
 def bucket, do: :some_custom_bucket_name
+```
+
+### Specify multiple asset hosts
+
+Arc lets you specify an asset host on a per definition basis. In case you want to use
+multiple hosts, you can specify an asset_host in the uploader definition file
+like this:
+
+```elixir
+def asset_host, do: "https://example.com"
 ```
 
 ### Access Control Permissions
@@ -458,13 +456,18 @@ Example:
 
 ```elixir
 # Without a scope:
-{:ok, path} = DummyDefinition.store("/Images/me.png")
-:ok = DummyDefinition.delete(path)
+{:ok, original_filename} = Avatar.store("/Images/me.png")
+:ok = Avatar.delete(original_filename)
 
 # With a scope:
 user = Repo.get! User, 1
-{:ok, path} = DummyDefinition.store({"/Images/me.png", user})
-:ok = DummyDefinition.delete({path, user})
+{:ok, original_filename} = Avatar.store({"/Images/me.png", user})
+:ok = Avatar.delete({original_filename, user})
+# or
+user = Repo.get!(User, 1)
+{:ok, original_filename} = Avatar.store({"/Images/me.png", user})
+user = Repo.get!(User, 1)
+:ok = Avatar.delete({user.avatar, user})
 ```
 
 ## Url Generation
