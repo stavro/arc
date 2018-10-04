@@ -45,8 +45,11 @@ defmodule ArcTest.Storage.S3 do
       :ok = definition.delete(args)
       signed_url = DummyDefinition.url(args, signed: true)
       {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_charlist(signed_url))
-      assert 404 == code
-      assert 'Not Found' == msg
+
+      # If buckets aren't configured to be public at bucket-level,
+      # deleted objects may return 403 Forbidden instead of 404 Not Found,
+      # even with a signed url
+      assert code in [403, 404]
     end
   end
 
