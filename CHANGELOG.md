@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.11.0 (2018-10-04)
+  * (Dependency) `:httpoison` removed in favor of `:hackney`
+  * (Enhancement) Proper generator file location for Phoenix 1.3+
+  * (Enhancement) Support setting asset_host to `false` in the app config to revert to the default
+  * (Enhancement) Allow overriding asset_host in an individual definition module
+  * (Enhancement) Definitions can conditionally skip a version or transformation
+
 ## v0.10.0 (2018-06-19)
   * (Dependency) `:ex_aws` increased to `~> 2.0`
   * (Dependency) `:ex_aws_s3` added at `~> 2.0`
