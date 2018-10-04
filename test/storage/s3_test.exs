@@ -36,6 +36,11 @@ defmodule ArcTest.Storage.S3 do
     def bucket, do: System.get_env("ARC_TEST_BUCKET")
   end
 
+  defmodule DefinitionWithAssetHost do
+    use Arc.Definition
+    def asset_host, do: "https://example.com"
+  end
+
   def env_bucket do
     System.get_env("ARC_TEST_BUCKET")
   end
@@ -149,6 +154,14 @@ defmodule ArcTest.Storage.S3 do
       System.put_env("ARC_ASSET_HOST", custom_asset_host)
       assert "#{custom_asset_host}/arctest/uploads/image.png" == DummyDefinition.url(@img)
     end
+  end
+
+  @tag :s3
+  @tag timeout: 150000
+  test "custom asset_host in definition" do
+    custom_asset_host = "https://example.com"
+
+    assert "#{custom_asset_host}/uploads/image.png" == DefinitionWithAssetHost.url(@img)
   end
 
   @tag :s3
