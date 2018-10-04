@@ -102,6 +102,7 @@ defmodule Arc.Storage.S3 do
 
   defp asset_host(definition) do
     case definition.asset_host() do
+      false -> default_host(definition)
       nil -> default_host(definition)
       host -> host
     end
