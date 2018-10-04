@@ -230,7 +230,7 @@ function convert {
         --headless \
         --convert-to html \
         --outdir $TMPDIR \
-        $1
+        "$1"
 }
 
 function filter_new_file_name {
@@ -239,9 +239,9 @@ function filter_new_file_name {
     | awk -F/ '{print $2}'
 }
 
-converted_file_name=$(convert $1 | filter_new_file_name)
+converted_file_name=$(convert "$1" | filter_new_file_name)
 
-cp $TMPDIR/$converted_file_name $2
+cp $TMPDIR/$converted_file_name "$2"
 rm $TMPDIR/$converted_file_name
 ```
 
