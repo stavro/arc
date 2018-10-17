@@ -21,7 +21,21 @@ defmodule Arc.File do
       {:ok, local_path} -> %Arc.File{path: local_path, file_name: filename}
       :error -> {:error, :invalid_file_path}
     end
-end
+  end
+
+  # Given a remote file with a filename
+  def new(%{remote_path: remote_path, filename: filename} = %{remote_path: "http" <> _, filename: _}) do
+    uri = URI.parse(remote_path)
+    case save_file(uri, filename) do
+      {:ok, local_path} -> %Arc.File{path: local_path, file_name: filename}
+      :error -> {:error, :invalid_file_path}
+    end
+  end
+
+  # Rejects remote file path
+  def new(%{remote_path: remote_path, filename: filename} = %{remote_path: _, filename: _}) do
+    {:error, :invalid_file_path}
+  end
 
   # Accepts a path
   def new(path) when is_binary(path) do
