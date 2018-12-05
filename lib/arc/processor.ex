@@ -6,7 +6,9 @@ defmodule Arc.Processor do
 
   defp apply_transformation(_, :skip), do: {:ok, nil}
   defp apply_transformation(file, :noaction), do: {:ok, file}
-  defp apply_transformation(file, {:noaction}), do: {:ok, file} # Deprecated
+  # Deprecated
+  defp apply_transformation(file, {:noaction}), do: {:ok, file}
+
   defp apply_transformation(file, {cmd, conversion, _}) do
     apply_transformation(file, {cmd, conversion})
   end

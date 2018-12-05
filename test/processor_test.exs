@@ -10,8 +10,14 @@ defmodule ArcTest.Processor do
     def validate({file, _}), do: String.ends_with?(file.file_name, ".png")
     def transform(:original, _), do: :noaction
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
-    def transform(:med, _), do: {:convert, fn(input, output) -> " #{input} -strip -thumbnail 10x10 #{output}" end, :jpg}
-    def transform(:small, _), do: {:convert, fn(input, output) -> [input, "-strip", "-thumbnail", "10x10", output] end, :jpg}
+
+    def transform(:med, _),
+      do: {:convert, fn input, output -> " #{input} -strip -thumbnail 10x10 #{output}" end, :jpg}
+
+    def transform(:small, _),
+      do:
+        {:convert, fn input, output -> [input, "-strip", "-thumbnail", "10x10", output] end, :jpg}
+
     def transform(:skipped, _), do: :skip
     def __versions, do: [:original, :thumb]
   end
@@ -38,13 +44,15 @@ defmodule ArcTest.Processor do
   end
 
   test "returns nil for :skip transformations" do
-    assert {:ok, nil} = Arc.Processor.process(DummyDefinition, :skipped, {Arc.File.new(@img), nil})
+    assert {:ok, nil} =
+             Arc.Processor.process(DummyDefinition, :skipped, {Arc.File.new(@img), nil})
   end
 
   test "transforms a copied version of file according to the specified transformation" do
     {:ok, new_file} = Arc.Processor.process(DummyDefinition, :thumb, {Arc.File.new(@img), nil})
     assert new_file.path != @img
-    assert "128x128" == geometry(@img) #original file untouched
+    # original file untouched
+    assert "128x128" == geometry(@img)
     assert "10x10" == geometry(new_file.path)
     cleanup(new_file.path)
   end
@@ -52,7 +60,8 @@ defmodule ArcTest.Processor do
   test "transforms a copied version of file according to a function transformation that returns a string" do
     {:ok, new_file} = Arc.Processor.process(DummyDefinition, :med, {Arc.File.new(@img), nil})
     assert new_file.path != @img
-    assert "128x128" == geometry(@img) #original file untouched
+    # original file untouched
+    assert "128x128" == geometry(@img)
     assert "10x10" == geometry(new_file.path)
     cleanup(new_file.path)
   end
@@ -60,16 +69,25 @@ defmodule ArcTest.Processor do
   test "transforms a copied version of file according to a function transformation that returns a list" do
     {:ok, new_file} = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(@img), nil})
     assert new_file.path != @img
-    assert "128x128" == geometry(@img) #original file untouched
+    # original file untouched
+    assert "128x128" == geometry(@img)
     assert "10x10" == geometry(new_file.path)
     cleanup(new_file.path)
   end
 
   test "transforms a file given as a binary" do
     img_binary = File.read!(@img)
-    {:ok, new_file} = Arc.Processor.process(DummyDefinition, :small, {Arc.File.new(%{binary: img_binary, filename: "image.png"}), nil})
+
+    {:ok, new_file} =
+      Arc.Processor.process(
+        DummyDefinition,
+        :small,
+        {Arc.File.new(%{binary: img_binary, filename: "image.png"}), nil}
+      )
+
     assert new_file.path != @img
-    assert "128x128" == geometry(@img) #original file untouched
+    # original file untouched
+    assert "128x128" == geometry(@img)
     assert "10x10" == geometry(new_file.path)
     cleanup(new_file.path)
   end
@@ -77,13 +95,15 @@ defmodule ArcTest.Processor do
   test "file names with spaces" do
     {:ok, new_file} = Arc.Processor.process(DummyDefinition, :thumb, {Arc.File.new(@img2), nil})
     assert new_file.path != @img2
-    assert "128x128" == geometry(@img2) #original file untouched
+    # original file untouched
+    assert "128x128" == geometry(@img2)
     assert "10x10" == geometry(new_file.path)
     cleanup(new_file.path)
   end
 
   test "returns tuple in an invalid transformation" do
-    assert {:error, _} = Arc.Processor.process(BrokenDefinition, :thumb, {Arc.File.new(@img), nil})
+    assert {:error, _} =
+             Arc.Processor.process(BrokenDefinition, :thumb, {Arc.File.new(@img), nil})
   end
 
   test "raises an error if the given transformation executable cannot be found" do

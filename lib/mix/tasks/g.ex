@@ -26,8 +26,9 @@ defmodule Mix.Tasks.Arc do
     """
 
     def run([model_name]) do
-      app_name = Mix.Project.config[:app]
-      if (File.exists?("lib/#{app_name}_web/")) do
+      app_name = Mix.Project.config()[:app]
+
+      if File.exists?("lib/#{app_name}_web/") do
         project_module_name = camelize(to_string(app_name))
         generate_phx_uploader_file(model_name, project_module_name)
       else
@@ -36,13 +37,13 @@ defmodule Mix.Tasks.Arc do
     end
 
     def run([model_name, path]) do
-      app_name = Mix.Project.config[:app]
+      app_name = Mix.Project.config()[:app]
       project_module_name = camelize(to_string(app_name))
       generate_uploader_file(model_name, project_module_name, path)
     end
 
     def run(_) do
-      IO.puts "Incorrect syntax. Please try mix arc.g <model_name>"
+      IO.puts("Incorrect syntax. Please try mix arc.g <model_name>")
     end
 
     defp generate_uploader_file(model_name, project_module_name, path) do
@@ -51,19 +52,25 @@ defmodule Mix.Tasks.Arc do
     end
 
     defp generate_phx_uploader_file(model_name, project_module_name) do
-      app_name = Mix.Project.config[:app]
-      model_destination = Path.join(System.cwd(), "/lib/#{app_name}_web/uploaders/#{underscore(model_name)}.ex")
+      app_name = Mix.Project.config()[:app]
+
+      model_destination =
+        Path.join(System.cwd(), "/lib/#{app_name}_web/uploaders/#{underscore(model_name)}.ex")
+
       create_uploader(model_name, project_module_name, model_destination)
     end
 
     defp create_uploader(model_name, project_module_name, model_destination) do
-      create_file model_destination, uploader_template(
+      create_file(
+        model_destination,
+        uploader_template(
           model_name: model_name,
           uploader_model_name: Module.concat(project_module_name, camelize(model_name))
+        )
       )
     end
 
-    embed_template :uploader, """
+    embed_template(:uploader, """
     defmodule <%= inspect @uploader_model_name %> do
       use Arc.Definition
 
@@ -114,7 +121,6 @@ defmodule Mix.Tasks.Arc do
       #   [content_type: MIME.from_path(file.file_name)]
       # end
     end
-    """
-
+    """)
   end
 end

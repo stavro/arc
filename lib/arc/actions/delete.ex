@@ -2,7 +2,7 @@ defmodule Arc.Actions.Delete do
   defmacro __using__(_) do
     quote do
       def delete(args), do: Arc.Actions.Delete.delete(__MODULE__, args)
-      
+
       defoverridable [{:delete, 1}]
     end
   end
@@ -26,12 +26,13 @@ defmodule Arc.Actions.Delete do
   defp do_delete(definition, {file, scope}) do
     if definition.async do
       definition.__versions
-      |> Enum.map(fn(r)     -> async_delete_version(definition, r, {file, scope}) end)
-      |> Enum.each(fn(task) -> Task.await(task, version_timeout()) end)
+      |> Enum.map(fn r -> async_delete_version(definition, r, {file, scope}) end)
+      |> Enum.each(fn task -> Task.await(task, version_timeout()) end)
     else
       definition.__versions
-      |> Enum.map(fn(version) -> delete_version(definition, version, {file, scope}) end)
+      |> Enum.map(fn version -> delete_version(definition, version, {file, scope}) end)
     end
+
     :ok
   end
 

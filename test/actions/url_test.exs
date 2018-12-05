@@ -25,30 +25,39 @@ defmodule ArcTest.Actions.Url do
   end
 
   test_with_mock "delegates url generation to the storage engine", Arc.Storage.S3,
-    [url: fn(DummyDefinition, :original, {%{file_name: "file.png"}, nil}, []) -> :ok end] do
+    url: fn DummyDefinition, :original, {%{file_name: "file.png"}, nil}, [] -> :ok end do
     assert DummyDefinition.url("file.png") == :ok
   end
 
   test_with_mock "optional atom as a second argument specifies the version", Arc.Storage.S3,
-    [url: fn(DummyDefinition, :thumb, {%{file_name: "file.png"}, nil}, []) -> :ok end] do
+    url: fn DummyDefinition, :thumb, {%{file_name: "file.png"}, nil}, [] -> :ok end do
     assert DummyDefinition.url("file.png", :thumb) == :ok
   end
 
   test_with_mock "optional list as a second argument specifies the options", Arc.Storage.S3,
-    [url: fn(DummyDefinition, :original, {%{file_name: "file.png"}, nil}, [signed: true, expires_in: 10]) -> :ok end] do
+    url: fn DummyDefinition,
+            :original,
+            {%{file_name: "file.png"}, nil},
+            [signed: true, expires_in: 10] ->
+      :ok
+    end do
     assert DummyDefinition.url("file.png", signed: true, expires_in: 10) == :ok
   end
 
   test_with_mock "optional tuple for file including scope", Arc.Storage.S3,
-    [url: fn(DummyDefinition, :original, {%{file_name: "file.png"}, :scope}, []) -> :ok end] do
+    url: fn DummyDefinition, :original, {%{file_name: "file.png"}, :scope}, [] -> :ok end do
     assert DummyDefinition.url({"file.png", :scope}) == :ok
   end
 
   test_with_mock "optional tuple for file including scope 2", Arc.Storage.S3,
-    [url: fn
-    (DummyDefinition, :original, {%{file_name: "file.png"}, :scope}, [signed: true]) -> :ok
-    (DummyDefinition, :thumb, {%{file_name: "file.png"}, :scope}, [signed: true]) -> :ok
-  end] do
-    assert DummyDefinition.urls({"file.png", :scope}, signed: true) == %{original: :ok, thumb: :ok, skipped: nil}
+    url: fn
+      DummyDefinition, :original, {%{file_name: "file.png"}, :scope}, [signed: true] -> :ok
+      DummyDefinition, :thumb, {%{file_name: "file.png"}, :scope}, [signed: true] -> :ok
+    end do
+    assert DummyDefinition.urls({"file.png", :scope}, signed: true) == %{
+             original: :ok,
+             thumb: :ok,
+             skipped: nil
+           }
   end
 end
