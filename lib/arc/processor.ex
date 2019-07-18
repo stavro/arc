@@ -12,6 +12,6 @@ defmodule Arc.Processor do
   end
 
   defp apply_transformation(file, {cmd, conversion}) do
-    Arc.Transformations.Convert.apply(cmd, Arc.File.ensure_path(file), conversion)
+    Arc.Transformations.Convert.apply(cmd, file, conversion)
   end
 end
