@@ -6,9 +6,10 @@ defmodule Arc.Transformations.Convert do
 
     ensure_executable_exists!(program)
 
-    case System.cmd(program, args_list(args), stderr_to_stdout: true) do
+    result = System.cmd(program, args_list(args), stderr_to_stdout: true)
+    case result do
       {_, 0} ->
-        {:ok, %Arc.File{file | path: new_path}}
+        {:ok, %Arc.File{file | path: new_path, tempfile?: true}}
       {error_message, _exit_code} ->
         {:error, error_message}
     end
