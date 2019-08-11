@@ -283,6 +283,17 @@ defmodule Avatar do
 end
 ```
 
+If you want to handle your attachements by phoenix application, configure the endpoint to serve it.
+
+```elisir
+defmodule AppWeb.Endpoint do
+  # ... 
+  
+  plug Plug.Static,
+    at: "/uploads", from: Path.expand("./uploads"), gzip: false
+end
+```
+
 ### S3 Configuration
 
 [ExAws](https://github.com/CargoSense/ex_aws) is used to support Amazon S3.
