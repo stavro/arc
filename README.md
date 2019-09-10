@@ -1,7 +1,44 @@
+## This Project is Deprecated
+
+**NOTE**: This project is being deprecated in favor of
+[Waffle](https://github.com/elixir-waffle/waffle). The new project is based off
+this project meaning all of the same configuration and APIs will continue to
+work as expected (at the time of writing this).
+
+### Migrating to Waffle
+
+#### Update your dependency
+
+If you are using Mix, simply change your dependency from `arc` to `waffle`.
+Waffle uses the same version tags, so there is no need to modify the version
+in your mix file.
+
+Because Waffle is still Arc under the hood, any Arc-based storage providers,
+such as `arc_gcs`, will continue to work without any additional changes.
+
+#### Update your configs
+
+Replace any instances of `config :arc` to `config :waffle`. All configuration
+options remain the same (as of version `0.11.0`) and do not need to be updated.
+
+#### Update your code
+
+Change any instances of `Arc` to `Waffle` **except** where it concerns the
+third-party storage providers. For example, `Arc.Storage.GCS` would continue
+to use `Arc` as the root namespace because that's defined outside the core
+library. If you wish to standardize the libraries, you can use an alias in your
+files to prepare for an eventual namespace conversion, e.g.
+
+```elixir
+# "Renames" the Arc namespace to Waffle
+alias Arc, as: Waffle
+
+# Use the new library name as your normally would
+Waffle.Storage.GCS
+```
+
 Arc
 ===
-
-[![Build Status](https://semaphoreci.com/api/v1/projects/7fc62b34-c895-475e-a3a6-671fefd0c017/480818/badge.svg)](https://semaphoreci.com/stavro/arc)
 
 Arc is a flexible file upload library for Elixir with straightforward integrations for Amazon S3 and ImageMagick.
 
