@@ -6,7 +6,7 @@ defmodule Arc.Storage.S3 do
     destination_dir = definition.storage_dir(version, {file, scope})
     s3_bucket = s3_bucket(definition)
     s3_key = Path.join(destination_dir, file.file_name)
-    asset_host = asset_host(definition)
+    _asset_host = asset_host(definition)
     acl = definition.acl(version, {file, scope})
 
     s3_options =
