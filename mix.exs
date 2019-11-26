@@ -46,7 +46,7 @@ defmodule Arc.Mixfile do
       # If using Amazon S3
       {:ex_aws, "~> 2.0", optional: true},
       {:ex_aws_s3, "~> 2.0", optional: true},
-      {:poison, "~> 2.2 or ~> 3.1", optional: true},
+      {:poison, "~> 2.2 or ~> 3.1 or ~> 4.0", optional: true},
       {:sweet_xml, "~> 0.6", optional: true},
 
       # Test
