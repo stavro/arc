@@ -4,14 +4,16 @@ defmodule Arc.Mixfile do
   @version "0.10.0"
 
   def project do
-    [app: :arc,
-     version: @version,
-     elixir: "~> 1.4",
-     deps: deps(),
+    [
+      app: :arc,
+      version: @version,
+      elixir: "~> 1.4",
+      deps: deps(),
 
-    # Hex
-     description: description(),
-     package: package()]
+      # Hex
+      description: description(),
+      package: package()
+    ]
   end
 
   defp description do
@@ -21,18 +23,21 @@ defmodule Arc.Mixfile do
   end
 
   defp package do
-    [maintainers: ["Sean Stavropoulos"],
-     licenses: ["Apache 2.0"],
-     links: %{"GitHub" => "https://github.com/stavro/arc"},
-     files: ~w(mix.exs README.md CHANGELOG.md lib)]
+    [
+      maintainers: ["Sean Stavropoulos"],
+      licenses: ["Apache 2.0"],
+      links: %{"GitHub" => "https://github.com/stavro/arc"},
+      files: ~w(mix.exs README.md CHANGELOG.md lib)
+    ]
   end
 
   def application do
     [
-      applications: [
-        :logger,
-        :hackney,
-      ] ++ applications(Mix.env)
+      applications:
+        [
+          :logger,
+          :hackney
+        ] ++ applications(Mix.env())
     ]
   end
 
@@ -41,7 +46,7 @@ defmodule Arc.Mixfile do
 
   defp deps do
     [
-      {:hackney, "~> 1.0"},
+      {:hackney, "~> 1.18"},
 
       # If using Amazon S3
       {:ex_aws, "~> 2.0", optional: true},
@@ -50,7 +55,7 @@ defmodule Arc.Mixfile do
       {:sweet_xml, "~> 0.6", optional: true},
 
       # Test
-      {:mock, "~> 0.1", only: :test},
+      {:mock, "~> 0.3.4", only: :test},
 
       # Dev
       {:ex_doc, "~> 0.14", only: :dev}
