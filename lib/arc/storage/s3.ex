@@ -14,7 +14,9 @@ defmodule Arc.Storage.S3 do
       |> ensure_keyword_list()
       |> Keyword.put(:acl, acl)
 
-    do_put(file, {s3_bucket, s3_key, s3_options})
+    config = ex_aws_config(definition)
+
+    do_put(file, {s3_bucket, s3_key, s3_options, config})
   end
 
   def url(definition, version, file_and_scope, options \\ []) do
@@ -25,7 +27,7 @@ defmodule Arc.Storage.S3 do
   end
 
   def delete(definition, version, {file, scope}) do
-    config = aws_s3_config()
+    config = ex_aws_config(definition)
 
     s3_bucket(definition)
     |> ExAws.S3.delete_object(s3_key(definition, version, {file, scope}))
@@ -42,10 +44,8 @@ defmodule Arc.Storage.S3 do
   defp ensure_keyword_list(map) when is_map(map), do: Map.to_list(map)
 
   # If the file is stored as a binary in-memory, send to AWS in a single request
-  defp do_put(file = %Arc.File{binary: file_binary}, {s3_bucket, s3_key, s3_options})
+  defp do_put(file = %Arc.File{binary: file_binary}, {s3_bucket, s3_key, s3_options, config})
        when is_binary(file_binary) do
-    config = aws_s3_config()
-
     ExAws.S3.put_object(s3_bucket, s3_key, file_binary, s3_options)
     |> ExAws.request(config)
     |> case do
@@ -55,9 +55,7 @@ defmodule Arc.Storage.S3 do
   end
 
   # Stream the file and upload to AWS as a multi-part upload
-  defp do_put(file, {s3_bucket, s3_key, s3_options}) do
-    config = aws_s3_config()
-
+  defp do_put(file, {s3_bucket, s3_key, s3_options, config}) do
     file.path
     |> ExAws.S3.Upload.stream_file()
     |> ExAws.S3.upload(s3_bucket, s3_key, s3_options)
@@ -86,7 +84,7 @@ defmodule Arc.Storage.S3 do
     # fallback to default, if neither is present.
     options = put_in(options[:expires_in], options[:expires_in] || @default_expiry_time)
     options = put_in(options[:virtual_host], virtual_host())
-    config = aws_s3_config()
+    config = ex_aws_config(definition)
     s3_key = s3_key(definition, version, file_and_scope)
     s3_bucket = s3_bucket(definition)
     {:ok, url} = ExAws.S3.presigned_url(config, :get, s3_bucket, s3_key, options)
@@ -133,10 +131,9 @@ defmodule Arc.Storage.S3 do
     end
   end
 
-  defp aws_s3_config() do
-    ExAws.Config.new(
-      :s3,
-      Application.get_env(:arc, :ex_aws_config, Application.get_all_env(:ex_aws))
-    )
+  defp ex_aws_config(definition) do
+    case definition.ex_aws_config() do
+      config -> config
+    end
   end
 end
