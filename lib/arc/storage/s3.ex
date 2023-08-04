@@ -1,6 +1,6 @@
 defmodule Arc.Storage.S3 do
   require Logger
-  @default_expiry_time 60*5
+  @default_expiry_time 60 * 5
 
   def put(definition, version, {file, scope}) do
     destination_dir = definition.storage_dir(version, {file, scope})
@@ -14,20 +14,24 @@ defmodule Arc.Storage.S3 do
       |> ensure_keyword_list()
       |> Keyword.put(:acl, acl)
 
-    do_put(file, {s3_bucket, s3_key, s3_options})
+    config = ex_aws_config(definition)
+
+    do_put(file, {s3_bucket, s3_key, s3_options, config})
   end
 
   def url(definition, version, file_and_scope, options \\ []) do
     case Keyword.get(options, :signed, false) do
       false -> build_url(definition, version, file_and_scope, options)
-      true  -> build_signed_url(definition, version, file_and_scope, options)
+      true -> build_signed_url(definition, version, file_and_scope, options)
     end
   end
 
   def delete(definition, version, {file, scope}) do
+    config = ex_aws_config(definition)
+
     s3_bucket(definition)
     |> ExAws.S3.delete_object(s3_key(definition, version, {file, scope}))
-    |> ExAws.request()
+    |> ExAws.request(config)
 
     :ok
   end
@@ -40,21 +44,22 @@ defmodule Arc.Storage.S3 do
   defp ensure_keyword_list(map) when is_map(map), do: Map.to_list(map)
 
   # If the file is stored as a binary in-memory, send to AWS in a single request
-  defp do_put(file=%Arc.File{binary: file_binary}, {s3_bucket, s3_key, s3_options}) when is_binary(file_binary) do
+  defp do_put(file = %Arc.File{binary: file_binary}, {s3_bucket, s3_key, s3_options, config})
+       when is_binary(file_binary) do
     ExAws.S3.put_object(s3_bucket, s3_key, file_binary, s3_options)
-    |> ExAws.request()
+    |> ExAws.request(config)
     |> case do
-      {:ok, _res}     -> {:ok, file.file_name}
+      {:ok, _res} -> {:ok, file.file_name}
       {:error, error} -> {:error, error}
     end
   end
 
   # Stream the file and upload to AWS as a multi-part upload
-  defp do_put(file, {s3_bucket, s3_key, s3_options}) do
+  defp do_put(file, {s3_bucket, s3_key, s3_options, config}) do
     file.path
     |> ExAws.S3.Upload.stream_file()
     |> ExAws.S3.upload(s3_bucket, s3_key, s3_options)
-    |> ExAws.request()
+    |> ExAws.request(config)
     |> case do
       {:ok, %{status_code: 200}} -> {:ok, file.file_name}
       {:ok, :done} -> {:ok, file.file_name}
@@ -62,24 +67,24 @@ defmodule Arc.Storage.S3 do
     end
   rescue
     e in ExAws.Error ->
-      Logger.error(inspect e)
+      Logger.error(inspect(e))
       Logger.error(e.message)
       {:error, :invalid_bucket}
   end
 
   defp build_url(definition, version, file_and_scope, _options) do
-    url = Path.join host(definition), s3_key(definition, version, file_and_scope)
+    url = Path.join(host(definition), s3_key(definition, version, file_and_scope))
     url |> URI.encode()
   end
 
   defp build_signed_url(definition, version, file_and_scope, options) do
     # Previous arc argument was expire_in instead of expires_in
     # check for expires_in, if not present, use expire_at.
-    options = put_in options[:expires_in], Keyword.get(options, :expires_in, options[:expire_in])
+    options = put_in(options[:expires_in], Keyword.get(options, :expires_in, options[:expire_in]))
     # fallback to default, if neither is present.
-    options = put_in options[:expires_in], options[:expires_in] || @default_expiry_time
-    options = put_in options[:virtual_host], virtual_host()
-    config = ExAws.Config.new(:s3, Application.get_all_env(:ex_aws))
+    options = put_in(options[:expires_in], options[:expires_in] || @default_expiry_time)
+    options = put_in(options[:virtual_host], virtual_host())
+    config = ex_aws_config(definition)
     s3_key = s3_key(definition, version, file_and_scope)
     s3_bucket = s3_bucket(definition)
     {:ok, url} = ExAws.S3.presigned_url(config, :get, s3_bucket, s3_key, options)
@@ -111,7 +116,7 @@ defmodule Arc.Storage.S3 do
   defp default_host(definition) do
     case virtual_host() do
       true -> "https://#{s3_bucket(definition)}.s3.amazonaws.com"
-      _    -> "https://s3.amazonaws.com/#{s3_bucket(definition)}"
+      _ -> "https://s3.amazonaws.com/#{s3_bucket(definition)}"
     end
   end
 
@@ -123,6 +128,12 @@ defmodule Arc.Storage.S3 do
     case definition.bucket() do
       {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
       name -> name
+    end
+  end
+
+  defp ex_aws_config(definition) do
+    case definition.ex_aws_config() do
+      config -> config
     end
   end
 end

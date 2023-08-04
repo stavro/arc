@@ -12,8 +12,17 @@ defmodule Arc.Definition.Storage do
       def default_url(version, _), do: default_url(version)
       def default_url(_), do: nil
       def __storage, do: Application.get_env(:arc, :storage, Arc.Storage.S3)
+      def ex_aws_config, do: []
 
-      defoverridable [storage_dir: 2, filename: 2, validate: 1, default_url: 1, default_url: 2, __storage: 0, bucket: 0, asset_host: 0]
+      defoverridable storage_dir: 2,
+                     filename: 2,
+                     validate: 1,
+                     default_url: 1,
+                     default_url: 2,
+                     __storage: 0,
+                     bucket: 0,
+                     asset_host: 0,
+                     ex_aws_config: 0
 
       @before_compile Arc.Definition.Storage
     end
