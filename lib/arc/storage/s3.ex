@@ -84,7 +84,7 @@ defmodule Arc.Storage.S3 do
     # fallback to default, if neither is present.
     options = put_in(options[:expires_in], options[:expires_in] || @default_expiry_time)
     options = put_in(options[:virtual_host], virtual_host())
-    config = ex_aws_config(definition)
+    config = ExAws.Config.new(:s3, ex_aws_config(definition))
     s3_key = s3_key(definition, version, file_and_scope)
     s3_bucket = s3_bucket(definition)
     {:ok, url} = ExAws.S3.presigned_url(config, :get, s3_bucket, s3_key, options)
