@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.12.0 (2023-08-08)
+  * Note: This project is deprecated. This release is intended to help facilitate transitioning away from `arc`  to more maintained projects.
+  * (Enhancement) Support overriding the default ExAws config
+
 ## v0.11.0 (2018-10-04)
   * (Dependency) `:httpoison` removed in favor of `:hackney`
   * (Enhancement) Proper generator file location for Phoenix 1.3+
