@@ -114,9 +114,12 @@ defmodule Arc.Storage.S3 do
   end
 
   defp default_host(definition) do
+    config = definition |> ex_aws_config() |> then(&ExAws.Config.new(:s3, &1))
+    port = sanitized_port_component(config)
+
     case virtual_host() do
-      true -> "https://#{s3_bucket(definition)}.s3.amazonaws.com"
-      _ -> "https://s3.amazonaws.com/#{s3_bucket(definition)}"
+      true -> "#{config.scheme}#{s3_bucket(definition)}.#{config.host}#{port}"
+      _ -> "#{config.scheme}#{config.host}#{port}/#{s3_bucket(definition)}"
     end
   end
 
@@ -136,4 +139,11 @@ defmodule Arc.Storage.S3 do
       config -> config
     end
   end
+
+  # Exclude standard ports from url generation
+  @excluded_ports [80, "80", 443, "443"]
+  def sanitized_port_component(%{port: nil}), do: ""
+  def sanitized_port_component(%{port: port}) when port in @excluded_ports, do: ""
+  def sanitized_port_component(%{port: port}), do: ":#{port}"
+  def sanitized_port_component(_), do: ""
 end

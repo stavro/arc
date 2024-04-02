@@ -15,6 +15,17 @@ defmodule ArcTest.Storage.S3 do
     def s3_object_headers(:original, {_, :with_content_disposition}), do: %{content_disposition: "attachment; filename=abc.png"}
   end
 
+  defmodule DummyDefinitionWithExAWSOverrides do
+    use Arc.Definition
+
+    @acl :public_read
+    def storage_dir(_, _), do: "arctest/uploads"
+
+    def ex_aws_config do
+      [scheme: "http://", host: "localhost.localstack.com", port: 4566]
+    end
+  end
+
   defmodule DefinitionWithThumbnail do
     use Arc.Definition
     @versions [:thumb]
@@ -146,6 +157,20 @@ defmodule ArcTest.Storage.S3 do
 
     with_env :arc, :virtual_host, false, fn ->
       assert "https://s3.amazonaws.com/#{env_bucket()}/arctest/uploads/image.png" == DummyDefinition.url(@img)
+    end
+  end
+
+  @tag :s3
+  @tag timeout: 15000
+  test "virtual_host with ex_aws overrides" do
+    with_env :arc, :virtual_host, true, fn ->
+      assert "http://#{env_bucket()}.localhost.localstack.com:4566/arctest/uploads/image.png" ==
+               DummyDefinitionWithExAWSOverrides.url(@img)
+    end
+
+    with_env :arc, :virtual_host, false, fn ->
+      assert "http://localhost.localstack.com:4566/#{env_bucket()}/arctest/uploads/image.png" ==
+               DummyDefinitionWithExAWSOverrides.url(@img)
     end
   end
 
