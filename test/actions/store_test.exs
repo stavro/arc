@@ -68,4 +68,16 @@ defmodule ArcTest.Actions.Store do
       assert DummyDefinition.store("https://www.google.com/favicon.ico") == {:ok, "favicon.ico"}
     end
   end
+
+  test "accepts remote files with filenames" do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "newfavicon.ico", path: _}, nil}) -> {:ok, "newfavicon.ico"} end] do
+      assert DummyDefinition.store(%{remote_path: "https://www.google.com/favicon.ico", filename: "newfavicon.ico"}) == {:ok, "newfavicon.ico"}
+    end
+  end
+
+  test "rejects remote files with filenames and invalid remote path" do
+    with_mock Arc.Storage.S3, [put: fn(DummyDefinition, _, {%{file_name: "newfavicon.ico", path: _}, nil}) -> {:ok, "newfavicon.ico"} end] do
+      assert DummyDefinition.store(%{remote_path: "path/favicon.ico", filename: "newfavicon.ico"}) == {:error, :invalid_file_path}
+    end
+  end
 end
