@@ -13,9 +13,7 @@ defmodule ArcTest.Storage.Local do
 
 
   defmodule DummyDefinition do
-    use Arc.Actions.Store
-    use Arc.Definition.Storage
-    use Arc.Actions.Url
+    use Arc.Definition
 
     @acl :public_read
     def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
@@ -42,6 +40,11 @@ defmodule ArcTest.Storage.Local do
     :ok = Arc.Storage.Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
     refute File.exists?("arctest/uploads/original-image.png")
     refute File.exists?("arctest/uploads/1/thumb-image.png")
+  end
+
+  test "deleting when there's a skipped version" do
+    DummyDefinition.store(@img)
+    assert :ok = DummyDefinition.delete(@img)
   end
 
   test "save binary" do

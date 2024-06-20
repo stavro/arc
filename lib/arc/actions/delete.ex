@@ -2,7 +2,7 @@ defmodule Arc.Actions.Delete do
   defmacro __using__(_) do
     quote do
       def delete(args), do: Arc.Actions.Delete.delete(__MODULE__, args)
-      
+
       defoverridable [{:delete, 1}]
     end
   end
@@ -40,6 +40,11 @@ defmodule Arc.Actions.Delete do
   end
 
   defp delete_version(definition, version, {file, scope}) do
-    definition.__storage.delete(definition, version, {file, scope})
+    conversion = definition.transform(version, {file, scope})
+    if conversion == :skip do
+      :ok
+    else
+      definition.__storage.delete(definition, version, {file, scope})
+    end
   end
 end
